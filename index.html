@@ -223,13 +223,17 @@ h3 { font: 800 clamp(22px, 2.2vw, 28px)/1.1 var(--f-display); letter-spacing: -.
 .progress { margin-top: 36px; height: 4px; border-radius: 4px; background: var(--line); overflow: hidden; }
 .progress i { display: block; height: 100%; width: 100%; transform-origin: left; transform: scaleX(0); background: var(--blue); }
 .slots { list-style: none; margin: 0; padding: 0; }
-.slot { padding-block: clamp(28px, 7vh, 72px); border-top: 1px solid var(--line); display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 8px 24px; }
-.slot:last-child { border-bottom: 1px solid var(--line); }
-.slot .time { font: 500 15px/1.4 var(--f-mono); color: var(--muted); min-width: 8.5ch; padding-top: .7em; }
-.slot h3 { font-size: clamp(30px, 4vw, 54px); letter-spacing: -.035em; color: var(--muted); transition: color .35s ease; }
-.slot p { grid-column: 2; margin: 0; color: var(--muted); max-width: 40ch; }
-.slot.is-active h3 { color: var(--ink); }
-.slot.is-active .time { color: var(--c, var(--blue-soft)); }
+.slots > .slot { padding-block: clamp(28px, 7vh, 72px); border-top: 1px solid var(--line); display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 8px 24px; }
+.slots > .slot:last-child { border-bottom: 1px solid var(--line); }
+.slots > .slot .time { font: 500 15px/1.4 var(--f-mono); color: var(--muted); min-width: 8.5ch; padding-top: .7em; }
+.slots > .slot h3 { font-size: clamp(30px, 4vw, 54px); letter-spacing: -.035em; color: var(--muted); transition: color .35s ease; }
+.slots > .slot p { grid-column: 2; margin: 0; color: var(--muted); max-width: 40ch; }
+.slots > .slot.is-active h3 { color: var(--ink); }
+.slots > .slot.is-active .time { color: var(--c, var(--blue-soft)); }
+.slots > .slot h3 { display: flex; align-items: flex-start; gap: .32em; }
+.slot .mark { flex: none; width: .7em; height: .7em; margin-top: .1em; color: rgba(176, 180, 205, .26); transition: color .35s ease, transform .6s cubic-bezier(.34, 1.56, .64, 1); }
+.slot .mark svg { display: block; width: 100%; height: 100%; }
+.slot.is-active .mark { color: var(--c); transform: rotate(72deg) scale(1.08); }
 
 /* ---------- Equipos ---------- */
 .teams-head { display: flex; justify-content: space-between; align-items: end; gap: 24px; flex-wrap: wrap; margin-bottom: 44px; }
@@ -276,9 +280,9 @@ h3 { font: 800 clamp(22px, 2.2vw, 28px)/1.1 var(--f-display); letter-spacing: -.
   .office-inner { grid-template-columns: minmax(0, 1fr); }
 }
 @media (max-width: 560px) {
-  .slot { grid-template-columns: minmax(0, 1fr); }
-  .slot p { grid-column: 1; }
-  .slot .time { padding-top: 0; }
+  .slots > .slot { grid-template-columns: minmax(0, 1fr); }
+  .slots > .slot p { grid-column: 1; }
+  .slots > .slot .time { padding-top: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
@@ -414,22 +418,22 @@ h3 { font: 800 clamp(22px, 2.2vw, 28px)/1.1 var(--f-display); letter-spacing: -.
       <ol class="slots">
         <li class="slot is-active" data-time="10:00" style="--c: var(--yellow)">
           <span class="time">10:00</span>
-          <h3>Llegada y desayuno</h3>
+          <h3><span class="mark" data-mark="sun" aria-hidden="true"></span>Llegada y desayuno</h3>
           <p>Empezamos el día con un desayuno para todos.</p>
         </li>
         <li class="slot" data-time="11:00" style="--c: var(--blue)">
           <span class="time">11:00 – 13:00</span>
-          <h3>Juegos por equipos</h3>
+          <h3><span class="mark" data-mark="star" aria-hidden="true"></span>Juegos por equipos</h3>
           <p>Los cinco equipos se enfrentan durante la mañana.</p>
         </li>
         <li class="slot" data-time="13:30" style="--c: var(--coral)">
           <span class="time">13:30 – 14:00</span>
-          <h3>Almuerzo</h3>
+          <h3><span class="mark" data-mark="flower" aria-hidden="true"></span>Almuerzo</h3>
           <p>Paramos para comer todos juntos.</p>
         </li>
         <li class="slot" data-time="14:00" style="--c: var(--green)">
           <span class="time">Después</span>
-          <h3>Tiempo libre</h3>
+          <h3><span class="mark" data-mark="clover" aria-hidden="true"></span>Tiempo libre</h3>
           <p>El resto del día es para disfrutar la oficina nueva.</p>
         </li>
       </ol>
@@ -512,6 +516,7 @@ document.querySelectorAll(".shape[data-shape]").forEach(el => {
   const svg = v === "stroke" ? strokeSvg(name, el.dataset.stroke || "#edf2ff") : shapeSvg(name, v === "tint" ? "url(#g-tint)" : null);
   el.innerHTML = `<span class="float"><span class="spin">${svg}</span></span>`;
 });
+document.querySelectorAll(".mark[data-mark]").forEach(el => el.innerHTML = shapeSvg(el.dataset.mark, "currentColor"));
 fitStrokes();
 addEventListener("resize", fitStrokes);
 if (document.fonts) document.fonts.ready.then(fitStrokes);
@@ -651,7 +656,7 @@ if (window.gsap) {
   }
 
   /* Cronograma: active slot + progress */
-  const slots = gsap.utils.toArray(".slot");
+  const slots = gsap.utils.toArray(".slots > .slot");
   const setActive = slot => slots.forEach(s => s.classList.toggle("is-active", s === slot));
   slots.forEach(slot => ScrollTrigger.create({
     trigger: slot, start: "top 55%", end: "bottom 55%",
