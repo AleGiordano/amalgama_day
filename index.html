@@ -220,13 +220,6 @@ h3 { font: 800 clamp(22px, 2.2vw, 28px)/1.1 var(--f-display); letter-spacing: -.
 .sched-side { position: sticky; top: calc(var(--bar-h) + 40px); align-self: start; }
 .sched-side .eyebrow { display: block; margin-bottom: 18px; }
 .sched-side .note { font: 400 14px/1.5 var(--f-mono); color: var(--muted); margin-top: 18px; }
-.prog-row { display: flex; align-items: center; gap: 16px; margin-top: 36px; }
-.prog-mark { position: relative; flex: none; width: 36px; height: 36px; }
-.prog-mark > span { position: absolute; inset: 0; }
-.prog-mark svg { display: block; width: 100%; height: 100%; overflow: visible; }
-.prog-mark .pm-fill { clip-path: inset(0 calc((1 - var(--p, 0)) * 100%) 0 0); }
-.progress { flex: 1; height: 4px; border-radius: 4px; background: var(--line); overflow: hidden; }
-.progress i { display: block; height: 100%; width: 100%; transform-origin: left; transform: scaleX(0); background: var(--blue); }
 .slots { list-style: none; margin: 0; padding: 0; }
 .slots > .slot { padding-block: clamp(28px, 7vh, 72px); border-top: 1px solid var(--line); display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 8px 24px; }
 .slots > .slot:last-child { border-bottom: 1px solid var(--line); }
@@ -428,7 +421,6 @@ h3 { font: 800 clamp(22px, 2.2vw, 28px)/1.1 var(--f-display); letter-spacing: -.
       <div class="sched-side">
         <h2>Así va a ser el día</h2>
         <p class="note">{ Horarios tentativos, pueden moverse un poco }</p>
-        <div class="prog-row" aria-hidden="true"><div class="progress"><i id="schedProgress"></i></div><span class="prog-mark" id="schedMark"><span class="pm-base"></span><span class="pm-fill"></span></span></div>
       </div>
       <ol class="slots">
         <li class="slot is-active" data-time="10:00" style="--c: var(--yellow)">
@@ -550,9 +542,6 @@ document.querySelectorAll(".shape[data-shape]").forEach(el => {
   const svg = v === "stroke" ? strokeSvg(name, el.dataset.stroke || "#edf2ff") : shapeSvg(name, v === "tint" ? "url(#g-tint)" : null);
   el.innerHTML = `<span class="float"><span class="spin">${svg}</span></span>`;
 });
-const schedMark = document.getElementById("schedMark");
-schedMark.querySelector(".pm-base").innerHTML = strokeSvg("star", "rgba(176, 180, 205, .5)").replace('stroke-width="10"', 'stroke-width="26"');
-schedMark.querySelector(".pm-fill").innerHTML = shapeSvg("star", "#4f80ff");
 document.querySelectorAll("[data-top]").forEach(a => a.addEventListener("click", e => {
   e.preventDefault();
   scrollTo({ top: 0, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
@@ -706,21 +695,13 @@ if (window.gsap) {
     });
   }
 
-  /* Cronograma: active slot + progress */
+  /* Cronograma: active slot */
   const slots = gsap.utils.toArray(".slots > .slot");
   const setActive = slot => slots.forEach(s => s.classList.toggle("is-active", s === slot));
   slots.forEach(slot => ScrollTrigger.create({
     trigger: slot, start: "top 55%", end: "bottom 55%",
     onEnter: () => setActive(slot), onEnterBack: () => setActive(slot)
   }));
-  ScrollTrigger.create({
-    trigger: ".slots", start: "top 60%", end: "bottom 60%",
-    onUpdate: self => {
-      gsap.set("#schedProgress", { scaleX: self.progress });
-      schedMark.style.setProperty("--p", self.progress);
-      gsap.set(schedMark, { rotation: self.progress * 144 });
-    }
-  });
 
 }
 </script>
