@@ -231,6 +231,8 @@ h3 { font: 800 clamp(22px, 2.2vw, 28px)/1.1 var(--f-display); letter-spacing: -.
 .slots > .slot .time { font: 500 15px/1.4 var(--f-mono); color: var(--muted); min-width: 8.5ch; padding-top: .7em; }
 .slots > .slot h3 { font-size: clamp(30px, 4vw, 54px); letter-spacing: -.035em; color: var(--muted); transition: color .35s ease; }
 .slots > .slot p { grid-column: 2; margin: 0; color: var(--muted); max-width: 40ch; }
+.slots > .slot .by { grid-column: 2; font: 500 12px/1.4 var(--f-mono); color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+.slots > .slot.is-active .by { color: var(--c); }
 .slots > .slot.is-active h3 { color: var(--ink); }
 .slots > .slot.is-active .time { color: var(--c, var(--blue-soft)); }
 .slots > .slot h3 { display: flex; align-items: flex-start; gap: .32em; }
@@ -294,7 +296,7 @@ h3 { font: 800 clamp(22px, 2.2vw, 28px)/1.1 var(--f-display); letter-spacing: -.
 }
 @media (max-width: 560px) {
   .slots > .slot { grid-template-columns: minmax(0, 1fr); }
-  .slots > .slot p { grid-column: 1; }
+  .slots > .slot p, .slots > .slot .by { grid-column: 1; }
   .slots > .slot .time { padding-top: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -431,28 +433,38 @@ h3 { font: 800 clamp(22px, 2.2vw, 28px)/1.1 var(--f-display); letter-spacing: -.
         <p class="note">{ Horarios tentativos, pueden moverse un poco }</p>
       </div>
       <ol class="slots">
-        <li class="slot is-active" data-time="10:00" style="--c: var(--yellow)">
-          <span class="time">10:00</span>
-          <h3><span class="mark" data-mark="sun" aria-hidden="true"></span>Llegada y desayuno</h3>
+        <li class="slot is-active" style="--c: var(--yellow)">
+          <span class="time">10:00 – 10:15</span>
+          <h3><span class="mark" data-mark="sun" aria-hidden="true"></span>Desayuno</h3>
           <p>Empezamos el día con un desayuno para todos.</p>
+          <span class="by">A cargo de Experiencia</span>
         </li>
-        <li class="slot" data-time="11:00" style="--c: var(--blue)">
+        <li class="slot" style="--c: var(--pink)">
+          <span class="time">10:15 – 11:00</span>
+          <h3><span class="mark" data-mark="square" aria-hidden="true"></span>Yoga</h3>
+          <p>Una clase para arrancar el día con energía.</p>
+          <span class="by">A cargo de Mechi</span>
+        </li>
+        <li class="slot" style="--c: var(--blue)">
           <span class="time">11:00 – 13:00</span>
           <h3><span class="mark" data-mark="star" aria-hidden="true"></span>Juegos por equipos</h3>
           <p>Los cinco equipos se enfrentan durante la mañana.</p>
+          <span class="by">A cargo de Cultura</span>
         </li>
-        <li class="slot" data-time="13:30" style="--c: var(--coral)">
-          <span class="time">13:30 – 14:00</span>
+        <li class="slot" style="--c: var(--coral)">
+          <span class="time">13:30 – 15:00</span>
           <h3><span class="mark" data-mark="flower" aria-hidden="true"></span>Almuerzo</h3>
           <p>Paramos para comer todos juntos.</p>
+          <span class="by">A cargo de Experiencia</span>
         </li>
-        <li class="slot" data-time="yoga" style="--c: var(--pink)">
-          <span class="time">Por la tarde</span>
-          <h3><span class="mark" data-mark="square" aria-hidden="true"></span>Clase de yoga</h3>
-          <p>Una clase de yoga para bajar un cambio después del almuerzo.</p>
+        <li class="slot" style="--c: var(--blush)">
+          <span class="time">15:00 – 16:00</span>
+          <h3><span class="mark" data-mark="sun" aria-hidden="true"></span>Habla Tom</h3>
+          <p>Un rato para escuchar a Tom.</p>
+          <span class="by">A cargo de Tom</span>
         </li>
-        <li class="slot" data-time="14:00" style="--c: var(--green)">
-          <span class="time">Después</span>
+        <li class="slot" style="--c: var(--green)">
+          <span class="time">15:00 – 19:00</span>
           <h3><span class="mark" data-mark="clover" aria-hidden="true"></span>Tiempo libre</h3>
           <p>El resto del día es para disfrutar la oficina nueva.</p>
         </li>
@@ -514,11 +526,11 @@ const EVENT = {
 };
 
 const TEAMS = [
-  { name: "Equipo 1", shape: "flower", color: "var(--coral)", people: ["Gon", "Jose", "Alelu", "Ori", "Tony", "Franco Zalazar", "Javi"] },
-  { name: "Equipo 2", shape: "clover", color: "var(--green)", people: ["Joe", "Abril Remy", "Marian", "Eche", "Chano", "Manu Oreguy", "Fausti"] },
-  { name: "Equipo 3", shape: "star", color: "var(--blue)", people: ["Tom", "Agus", "Ani", "Estefi", "Pelli", "Tomi Romero", "Renu"] },
-  { name: "Equipo 4", shape: "sun", color: "var(--yellow)", people: ["April", "Ivo", "Flor", "Pity", "Nacho Dondo", "Gabo"] },
-  { name: "Equipo 5", shape: "square", color: "var(--blush)", people: ["Clari", "Chebu", "Diana", "Rama", "Dami", "Pedri", "Mechi"] }
+  { name: "Equipo 1", shape: "flower", color: "var(--coral)", people: ["Gon", "Jose", "Alelu", "Ori", "Tony", "Zala", "Javi"] },
+  { name: "Equipo 2", shape: "clover", color: "var(--green)", people: ["Joe", "Api", "Marian", "Eche", "Chano", "Manu", "Fausti"] },
+  { name: "Equipo 3", shape: "star", color: "var(--blue)", people: ["Tom", "Agus", "Ani", "Estefi", "Pelli", "Pedri", "Renu"] },
+  { name: "Equipo 4", shape: "sun", color: "var(--yellow)", people: ["April", "Ivo", "Flor", "Pity", "Nachito", "Gabo"] },
+  { name: "Equipo 5", shape: "square", color: "var(--blush)", people: ["Clari", "Chebu", "Puma", "Diani", "Dami", "Rama", "Mechi"] }
 ];
 
 const SHAPES = {
