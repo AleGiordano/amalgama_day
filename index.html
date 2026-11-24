@@ -204,13 +204,13 @@ h3 { font: 800 clamp(22px, 2.2vw, 28px)/1.1 var(--f-display); letter-spacing: -.
   position: relative; z-index: 1;
   max-width: var(--maxw); margin-inline: auto;
   padding-left: var(--gutter-l); padding-right: var(--gutter-r);
-  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 40px clamp(40px, 6vw, 96px); align-items: center;
+  display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 40px clamp(40px, 6vw, 96px); align-items: center;
 }
 .office .content .btn { margin-top: 32px; }
-.office-photo { margin: 0; border-radius: clamp(16px, 2vw, 24px); overflow: hidden; transform: rotate(2deg); box-shadow: 0 0 0 6px var(--white); transition: transform .5s cubic-bezier(.34, 1.56, .64, 1); }
+.office-photo { margin: 0; width: 100%; max-width: 440px; justify-self: end; border-radius: clamp(16px, 2vw, 24px); overflow: hidden; transform: rotate(2deg); box-shadow: 0 0 0 6px var(--white); transition: transform .5s cubic-bezier(.34, 1.56, .64, 1); }
 .office-photo:hover { transform: rotate(0deg) scale(1.02); }
 .office-photo img { display: block; width: 100%; height: auto; aspect-ratio: 1748 / 1228; object-fit: cover; }
-@media (max-width: 900px) { .office-inner { grid-template-columns: minmax(0, 1fr); } .office-photo { transform: rotate(1deg); } }
+@media (max-width: 900px) { .office-inner { grid-template-columns: minmax(0, 1fr); } .office-photo { transform: rotate(1deg); max-width: 360px; justify-self: start; } }
 .office h3 { font-size: clamp(40px, 7vw, 104px); letter-spacing: -.045em; line-height: .95; color: var(--white); max-width: 12ch; }
 .office p { margin: 18px 0 0; max-width: 40ch; font-size: clamp(17px, 1.6vw, 21px); color: var(--white); }
 .office .btn { border-color: var(--white); color: var(--white); }
