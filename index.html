@@ -1,0 +1,668 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Amalgama Day</title>
+<meta name="description" content="Un día de Amalgama para disfrutar juntos: desayuno, juegos por equipos, almuerzo y tiempo libre en la oficina nueva.">
+<meta name="theme-color" content="#050c26">
+<link rel="icon" type="image/svg+xml" href="assets/flower.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Epilogue:ital,wght@0,400;0,600;0,800;0,900;1,800;1,900&family=Inter:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: GSAP-style dark stage. Sticky location bar → nav → giant two-line title with two Amalgama shapes → editorial blocks → scroll-driven schedule → teams → closing CTA. */
+:root {
+  color-scheme: dark;
+  /* Amalgama palette (amalgama.co + culture stickers) */
+  --bg: #050c26;          /* deep Amalgama navy */
+  --surface: #01164d;     /* brand navy */
+  --surface-2: #0b1d55;
+  --line: rgba(176, 180, 205, .18);
+  --ink: #edf2ff;         /* brand light */
+  --muted: #b0b4cd;       /* brand grey */
+  --blue: #4f80ff;        /* brand primary */
+  --blue-soft: #95b3ff;
+  --coral: #fe566a;
+  --green: #67b9a4;
+  --yellow: #ffc700;
+  --blush: #f1a7a3;
+  --pink: #ffbbc3;
+  --on-accent: #01164d;
+  --white: #ffffff;
+  --green-deep: #2e7d69;  /* deeper clover green so white text stays legible */
+
+  --f-display: "Epilogue", "Arial Black", system-ui, sans-serif;
+  --f-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "DM Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  --bar-h: 44px;
+  --gutter-l: max(16px, env(safe-area-inset-left, 0px));
+  --gutter-r: max(16px, env(safe-area-inset-right, 0px));
+  --maxw: 1360px;
+}
+@media (min-width: 720px) { :root { --gutter-l: max(32px, env(safe-area-inset-left, 0px)); --gutter-r: max(32px, env(safe-area-inset-right, 0px)); } }
+
+* { box-sizing: border-box; }
+html { overflow-x: clip; scroll-padding-top: calc(var(--bar-h) + 16px); }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font: 400 16px/1.55 var(--f-body);
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 60; background: var(--blue); }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--blue-soft); outline-offset: 3px; border-radius: 6px; }
+.wrap { max-width: var(--maxw); margin-inline: auto; padding-left: var(--gutter-l); padding-right: var(--gutter-r); }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.shape-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+/* ---------- Sticky location bar (the "green banner") ---------- */
+.locbar {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 50;
+  background: var(--blue); color: var(--on-accent);
+  font: 500 14px/1 var(--f-body);
+}
+.locbar .wrap { min-height: var(--bar-h); display: flex; align-items: center; justify-content: center; gap: 10px 18px; flex-wrap: wrap; padding-block: 8px; text-align: center; }
+.locbar .pin { width: 16px; height: 16px; flex: none; }
+.locbar .where { display: inline-flex; align-items: center; gap: 8px; min-width: 0; }
+.locbar strong { font-weight: 600; }
+.locbar .sep { opacity: .5; }
+.locbar a.go {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-weight: 600; color: var(--on-accent);
+  text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1.5px;
+  transition: transform .2s ease;
+}
+.locbar a.go:hover { transform: translateX(2px); }
+.locbar a.go svg { width: 14px; height: 14px; }
+@media (max-width: 640px) { .locbar .date-part { display: none; } .locbar .wrap { gap: 8px 12px; } }
+
+/* ---------- Nav ---------- */
+.nav .wrap { display: flex; align-items: center; justify-content: center; gap: 24px; padding-block: 22px; }
+.nav .logo { display: inline-flex; color: var(--ink); width: 132px; }
+.nav .logo svg { width: 100%; height: auto; }
+.nav ul { display: flex; gap: 28px; list-style: none; margin: 0; padding: 0; font-size: 15px; }
+.nav ul a { text-decoration: none; color: var(--muted); transition: color .2s; }
+.nav ul a:hover { color: var(--ink); }
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  font: 600 15px/1 var(--f-body); text-decoration: none;
+  padding: 12px 18px; border-radius: 999px; border: 1.5px solid var(--ink); color: var(--ink);
+  transition: background .2s, color .2s, transform .2s;
+}
+.btn:hover { background: var(--ink); color: var(--on-accent); }
+.btn svg { width: 16px; height: 16px; }
+.btn.solid { background: var(--blue); border-color: var(--blue); color: var(--on-accent); }
+.btn.solid:hover { background: var(--ink); border-color: var(--ink); }
+@media (max-width: 760px) { .nav ul { display: none; } }
+
+/* ---------- Shapes (hover = they move) ---------- */
+.shape { position: absolute; display: block; cursor: grab; touch-action: manipulation; }
+.shape .float { display: block; width: 100%; height: 100%; }
+.shape .spin { display: block; width: 100%; height: 100%; will-change: transform; }
+.shape svg { display: block; width: 100%; height: 100%; overflow: visible; }
+
+/* ---------- Hero ---------- */
+.hero { position: relative; padding-block: clamp(24px, 6vw, 72px) clamp(40px, 6vw, 72px); }
+.hero h1 {
+  position: relative; margin: 0; text-align: center;
+  font: 900 clamp(50px, 14.5vw, 236px)/.9 var(--f-display);
+  letter-spacing: -.055em;
+}
+.hero h1 .line { display: block; }
+.hero h1 .word { position: relative; display: inline-block; }
+.hero h1 .accent { color: inherit; }
+/* Each letter rises inside its own mask; .slot is the shape that briefly takes the letter's place */
+.hero h1 .ch { position: relative; display: inline-block; }
+.hero h1 .mask { display: inline-block; overflow: hidden; vertical-align: top; padding-bottom: .14em; margin-bottom: -.14em; }
+.hero h1 .ci { display: inline-block; }
+.hero h1 .slot { position: absolute; left: 50%; top: 52%; width: .5em; height: .5em; margin: -.25em 0 0 -.25em; pointer-events: none; visibility: hidden; }
+.hero h1 .slot svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.hero .shape { z-index: 2; }
+.hero .s-flower { width: .44em; aspect-ratio: 334/324; right: -.3em; top: -.26em; }
+.hero .s-ostar { width: .3em; aspect-ratio: 317/312; left: -.4em; top: .22em; }
+.hero .s-clover { width: .5em; aspect-ratio: 1; left: -.62em; bottom: .1em; }
+.hero .s-osquare { width: .36em; aspect-ratio: 1; right: -.48em; top: .02em; }
+.hero-foot { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: center; gap: 24px; margin-top: clamp(36px, 5vw, 64px); }
+.brace { font: 400 clamp(15px, 1.5vw, 18px)/1.5 var(--f-mono); color: var(--muted); max-width: 30ch; display: flex; gap: 12px; }
+.brace b { color: var(--ink); font-weight: 500; font-size: 1.9em; line-height: .8; }
+.brace span { padding-top: .2em; }
+.hero-meta { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+.when { margin: 0; text-align: center; font: 500 14px/1.3 var(--f-mono); color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+.when strong { display: block; color: var(--ink); font: 800 clamp(22px, 2.8vw, 36px)/1.1 var(--f-display); letter-spacing: -.01em; text-transform: none; }
+
+/* ---------- Section scaffolding ---------- */
+section { position: relative; }
+.block { padding-block: clamp(72px, 10vw, 140px); }
+.eyebrow { font: 500 13px/1 var(--f-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--blue-soft); }
+h2 { font: 900 clamp(40px, 6.4vw, 88px)/.95 var(--f-display); letter-spacing: -.04em; margin: 0; text-wrap: balance; }
+h3 { font: 800 clamp(22px, 2.2vw, 28px)/1.1 var(--f-display); letter-spacing: -.02em; margin: 0; }
+.lede { font-size: clamp(18px, 1.7vw, 22px); line-height: 1.5; color: var(--ink); max-width: 34ch; margin: 0; }
+
+/* ---------- Qué esperar ---------- */
+/* Horizontal strip: pinned while scrolling, the track slides left (falls back to native side-scroll without GSAP) */
+.hstrip { position: relative; overflow-x: auto; overflow-y: hidden; }
+.js-strip .hstrip { overflow: hidden; }
+.hstrip-track {
+  display: flex; align-items: center; gap: clamp(56px, 8vw, 140px);
+  width: max-content;
+  padding-block: clamp(28px, 4vw, 48px);
+  padding-left: var(--gutter-l); padding-right: max(10vw, 48px);
+  will-change: transform;
+}
+.hp { flex: none; }
+.hp-intro { width: min(720px, calc(100vw - 32px)); padding-left: max(0px, calc((100vw - var(--maxw)) / 2)); box-sizing: content-box; }
+.hp-stage { width: min(640px, 82vw, 66svh); }
+.say {
+  margin: 0; white-space: nowrap; display: flex; align-items: center; gap: .26em;
+  font: 800 clamp(48px, 7.4vw, 118px)/1 var(--f-display); letter-spacing: -.045em; color: var(--ink);
+}
+.say .w { display: inline-block; }
+.say .w .ci { display: inline-block; }
+.say .w.punct { margin-left: -.2em; }
+.say .stk {
+  position: relative; display: inline-block; padding: .1em .22em .06em; border-radius: .14em;
+  background: var(--c); color: var(--on-accent); font-style: italic; font-weight: 900;
+}
+.say .stk:nth-of-type(odd) { transform: rotate(-2deg); }
+.say .stk:nth-of-type(even) { transform: rotate(1.5deg); }
+.say .mini {
+  position: absolute; right: -.35em; top: -.42em; transform: rotate(8deg);
+  font: 600 clamp(13px, 1.3vw, 20px)/1 var(--f-body); letter-spacing: 0; font-style: normal;
+  padding: .45em .7em; border-radius: 999px; background: var(--c); color: var(--on-accent); white-space: nowrap;
+}
+.say .ish { position: relative; display: inline-block; width: 1.05em; height: 1.05em; flex: none; margin-inline: .08em; }
+.tags { display: flex; flex-direction: column; align-items: flex-start; gap: .12em; font-size: clamp(44px, 6.4vw, 104px); }
+.tag { display: inline-block; font: 900 1em/1 var(--f-display); letter-spacing: -.035em; padding: .14em .3em .1em; border-radius: .14em; white-space: nowrap; color: var(--on-accent); }
+.tag.t1 { background: var(--pink); transform: rotate(-3deg); }
+.tag.t2 { background: var(--blue); transform: rotate(1.5deg) translateX(.6em); }
+.stage { position: relative; aspect-ratio: 1 / .92; max-width: 100%; }
+.stage .s-oclover { width: 20%; aspect-ratio: 1; left: 2%; bottom: 14%; }
+.stage .orb {
+  position: absolute; left: 14%; right: 14%; bottom: -4%; aspect-ratio: 1; border-radius: 50%;
+  background: radial-gradient(circle at 50% 18%, #2a4aa8 0%, #12286e 38%, #01164d 74%);
+  -webkit-mask-image: linear-gradient(#000 52%, transparent 76%); mask-image: linear-gradient(#000 52%, transparent 76%);
+}
+.stage .s-star { width: 34%; aspect-ratio: 317/312; left: 8%; top: 4%; }
+.stage .s-sun { width: 17%; aspect-ratio: 1; right: 14%; top: 0; }
+.stage .s-square { width: 25%; aspect-ratio: 1; right: 4%; top: 30%; }
+.stage .s-flower2 { width: 30%; aspect-ratio: 334/324; left: 34%; top: 24%; }
+
+/* Full-bleed band: breaks out of .wrap to span the whole screen */
+.office-sec { padding-left: var(--gutter-l); padding-right: var(--gutter-r); }
+.office {
+  border-radius: clamp(20px, 2.5vw, 32px);
+  position: relative; overflow: hidden;
+  background: linear-gradient(160deg, var(--green-deep) 0%, #2a6f5e 100%); color: var(--white);
+  padding-block: clamp(64px, 9vw, 128px);
+}
+.office-inner {
+  position: relative; z-index: 1;
+  max-width: var(--maxw); margin-inline: auto;
+  padding-left: var(--gutter-l); padding-right: var(--gutter-r);
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 28px 40px; align-items: end;
+}
+.office h3 { font-size: clamp(40px, 7vw, 104px); letter-spacing: -.045em; line-height: .95; color: var(--white); max-width: 12ch; }
+.office p { margin: 18px 0 0; max-width: 40ch; font-size: clamp(17px, 1.6vw, 21px); color: var(--white); }
+.office .btn { border-color: var(--white); color: var(--white); }
+.office .btn:hover { background: var(--white); color: var(--green-deep); }
+.office .shape { z-index: 0; }
+.office .s-clover2 { width: clamp(140px, 20vw, 300px); aspect-ratio: 1; right: 4%; top: -12%; }
+.office .s-flower3 { width: clamp(120px, 16vw, 240px); aspect-ratio: 334/324; left: 46%; bottom: -18%; }
+.office .s-star3 { width: clamp(90px, 11vw, 170px); aspect-ratio: 317/312; left: -3%; top: -10%; }
+
+/* ---------- Cronograma ---------- */
+.schedule { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: clamp(32px, 6vw, 96px); }
+.sched-side { position: sticky; top: calc(var(--bar-h) + 40px); align-self: start; }
+.sched-side .eyebrow { display: block; margin-bottom: 18px; }
+.sched-side .note { font: 400 14px/1.5 var(--f-mono); color: var(--muted); margin-top: 18px; }
+.progress { margin-top: 36px; height: 4px; border-radius: 4px; background: var(--line); overflow: hidden; }
+.progress i { display: block; height: 100%; width: 100%; transform-origin: left; transform: scaleX(0); background: var(--blue); }
+.slots { list-style: none; margin: 0; padding: 0; }
+.slot { padding-block: clamp(28px, 7vh, 72px); border-top: 1px solid var(--line); display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 8px 24px; }
+.slot:last-child { border-bottom: 1px solid var(--line); }
+.slot .time { font: 500 15px/1.4 var(--f-mono); color: var(--muted); min-width: 8.5ch; padding-top: .7em; }
+.slot h3 { font-size: clamp(30px, 4vw, 54px); letter-spacing: -.035em; color: var(--muted); transition: color .35s ease; }
+.slot p { grid-column: 2; margin: 0; color: var(--muted); max-width: 40ch; }
+.slot.is-active h3 { color: var(--ink); }
+.slot.is-active .time { color: var(--c, var(--blue-soft)); }
+
+/* ---------- Equipos ---------- */
+.teams-head { display: flex; justify-content: space-between; align-items: end; gap: 24px; flex-wrap: wrap; margin-bottom: 44px; }
+.teams-head p { margin: 0; color: var(--muted); max-width: 36ch; }
+.teams { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 14px; }
+.team {
+  position: relative; overflow: hidden;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 22px;
+  padding: 22px 20px 24px; min-height: 360px;
+  transition: border-color .3s, transform .3s;
+}
+.team:hover { border-color: var(--c); transform: translateY(-4px); }
+.team .num { font: 500 13px/1 var(--f-mono); color: var(--muted); letter-spacing: .1em; text-transform: uppercase; }
+.team { text-align: center; }
+.team h3 { margin-top: 8px; font-size: 30px; padding-inline: 40px; }
+.team .t-shape { position: absolute; width: 72px; aspect-ratio: 1; right: -22px; top: -22px; cursor: grab; }
+.team .t-shape svg { width: 100%; height: 100%; display: block; filter: none; }
+.team ul { list-style: none; padding: 0; margin: 26px 0 0; display: grid; gap: 10px; }
+.team ul { text-align: left; }
+.team li { display: flex; align-items: center; gap: 10px; font-size: 15px; min-width: 0; }
+.team li span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.av {
+  flex: none; display: inline-grid; place-items: center; border-radius: 50%;
+  width: 30px; height: 30px; font: 600 12px/1 var(--f-body); color: var(--on-accent); background: var(--c, var(--blue));
+}
+@media (max-width: 1100px) { .teams { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 680px) { .teams { grid-template-columns: repeat(2, minmax(0, 1fr)); } .team { min-height: 0; } }
+@media (max-width: 420px) { .teams { grid-template-columns: minmax(0, 1fr); } }
+/* ---------- Closing ---------- */
+.closing { padding-block: clamp(80px, 10vw, 140px) 40px; border-top: 1px solid var(--line); }
+.closing h2 { font-size: clamp(48px, 9vw, 140px); max-width: 11ch; }
+.closing h2 .accent { color: var(--blue); }
+.closing .row { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 28px; margin-top: 40px; }
+.closing .addr { font: 400 15px/1.5 var(--f-mono); color: var(--muted); }
+.closing .addr strong { display: block; color: var(--ink); font: 600 18px/1.4 var(--f-body); }
+.foot { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; margin-top: clamp(60px, 8vw, 110px); padding-top: 24px; border-top: 1px solid var(--line); color: var(--muted); font-size: 14px; }
+.foot .logo { width: 110px; color: var(--ink); display: inline-flex; }
+.foot .logo svg { width: 100%; height: auto; }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 900px) {
+  .schedule { grid-template-columns: minmax(0, 1fr); }
+  .sched-side { position: static; }
+  .office-inner { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 560px) {
+  .slot { grid-template-columns: minmax(0, 1fr); }
+  .slot p { grid-column: 1; }
+  .slot .time { padding-top: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .team, .btn, .locbar a.go { transition: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- Shape library (Amalgama culture stickers, exported from Figma) -->
+<svg class="shape-defs" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="g-flower" x1="167" y1="0" x2="167" y2="324" gradientUnits="userSpaceOnUse"><stop stop-color="#FE566A"/><stop offset="1" stop-color="#FE9AA6"/></linearGradient>
+    <linearGradient id="g-clover" x1="175.39" y1="0" x2="175.39" y2="352.995" gradientUnits="userSpaceOnUse"><stop stop-color="#67B9A4"/><stop offset="1" stop-color="#85D0BD"/></linearGradient>
+    <linearGradient id="g-star" x1="158.5" y1="0" x2="158.5" y2="312" gradientUnits="userSpaceOnUse"><stop stop-color="#4F80FF"/><stop offset="1" stop-color="#95B3FF"/></linearGradient>
+    <linearGradient id="g-sun" x1="102.5" y1="0" x2="102.5" y2="205" gradientUnits="userSpaceOnUse"><stop stop-color="#FFC700"/><stop offset="1" stop-color="#FFDD66"/></linearGradient>
+    <linearGradient id="g-square" x1="85.7653" y1="-25.1266" x2="236.613" y2="347.505" gradientUnits="userSpaceOnUse"><stop stop-color="#F1A7A3"/><stop offset="1" stop-color="#F8D3D1"/></linearGradient>
+    <linearGradient id="g-tint" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#85D0BD" stop-opacity=".55"/><stop offset="1" stop-color="#85D0BD" stop-opacity=".18"/></linearGradient>
+    <path id="p-flower" d="M106.189 36.6279C131.987 -12.2093 202.013 -12.2093 227.811 36.6279C237.759 55.4613 255.892 68.6198 276.899 72.2503C331.374 81.6644 353.013 148.184 314.483 187.782C299.624 203.052 292.698 224.343 295.732 245.42C303.602 300.075 246.949 341.187 197.338 316.822C178.207 307.426 155.793 307.426 136.662 316.822C87.0509 341.187 30.3982 300.075 38.2675 245.42C41.3023 224.343 34.3762 203.052 19.5174 187.782C-19.0131 148.184 2.62636 81.6644 57.1006 72.2503C78.1079 68.6198 96.2406 55.4613 106.189 36.6279Z"/>
+    <path id="p-clover" fill-rule="evenodd" d="M262.831 87.9885V88.0286C311.408 88.0492 350.781 127.435 350.781 176.017C350.781 224.601 311.405 263.988 262.825 264.006C262.828 264.339 262.83 264.672 262.83 265.006C262.83 313.601 223.437 352.995 174.842 352.995C126.247 352.995 86.8533 313.601 86.8533 265.006C86.8533 264.67 86.8551 264.334 86.8589 263.999C38.7848 263.394 0 224.235 0 176.017C0 127.801 38.7819 88.6435 86.8535 88.0357L86.8535 87.9885C86.8535 39.3938 126.247 0 174.842 0C223.437 0 262.831 39.3938 262.831 87.9885Z"/>
+    <path id="p-star" d="M137.594 10.649C147.953 -3.54968 169.047 -3.54968 179.406 10.649L202.609 42.4526C207.712 49.4465 215.941 53.4305 224.562 53.0804L263.763 51.4883C281.265 50.7776 294.416 67.3568 289.833 84.3515L279.566 122.418C277.308 130.789 279.34 139.741 284.987 146.298L310.667 176.117C322.132 189.429 317.438 210.103 301.363 217.096L265.357 232.761C257.439 236.205 251.744 243.384 250.165 251.911L242.986 290.686C239.781 307.997 220.776 317.198 205.315 308.924L170.683 290.391C163.067 286.315 153.933 286.315 146.317 290.391L111.685 308.924C96.2239 317.198 77.219 307.997 74.0138 290.686L66.8347 251.911C65.256 243.384 59.5612 236.205 51.643 232.761L15.637 217.096C-0.438012 210.103 -5.13185 189.429 6.33286 176.117L32.0125 146.298C37.6597 139.741 39.6922 130.789 37.4343 122.418L27.1673 84.3515C22.5836 67.3568 35.7354 50.7776 53.2368 51.4883L92.4379 53.0804C101.059 53.4305 109.288 49.4465 114.391 42.4526L137.594 10.649Z"/>
+    <circle id="p-sun" cx="102.5" cy="102.5" r="102.5"/>
+    <path id="p-square" d="M55.6291 48.0427C72.174 7.8725 118.485 -10.8748 158.314 6.47413L216.078 31.6348L274.336 55.6294C314.506 72.1743 333.253 118.485 315.904 158.314L290.744 216.078L266.749 274.336C250.204 314.506 203.894 333.253 164.064 315.905L106.3 290.744L48.0424 266.749C7.87218 250.204 -10.8751 203.894 6.47383 164.064L31.6345 106.301L55.6291 48.0427Z"/>
+  </defs>
+</svg>
+
+<!-- Sticky location bar -->
+<div class="locbar" role="region" aria-label="Ubicación del evento">
+  <div class="wrap">
+    <span class="where">
+      <svg class="pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/></svg>
+      <span><span class="date-part"><strong>Amalgama Day</strong> · <span data-bind="date"></span> · </span><span data-bind="place"></span></span>
+    </span>
+    <a class="go" data-maps href="https://www.google.com/maps/search/?api=1&amp;query=Hernan+Wineberg+2737%2C+B1636DIE+Olivos%2C+Provincia+de+Buenos+Aires" target="_blank" rel="noopener">Cómo llegar
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>
+    </a>
+  </div>
+</div>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="logo" href="#top" aria-label="Amalgama">
+      <svg viewBox="0 0 265 50" fill="currentColor" aria-hidden="true"><path d="M33.9341 45.7972C33.7929 45.5633 33.6008 45.3639 33.3719 45.2136C33.0639 45.0117 32.7032 44.9042 32.3343 44.9043C31.8725 44.9056 31.4284 45.0817 31.0925 45.3968C30.5455 45.9092 29.2004 46.2477 27.6652 46.2535C26.1299 46.2593 24.7801 45.9104 24.2308 45.4003C23.8939 45.0864 23.4495 44.9116 22.9878 44.9113C22.619 44.9124 22.2586 45.0212 21.9514 45.2241C21.7232 45.3763 21.5319 45.5773 21.3916 45.8123C21.2513 46.0473 21.1655 46.3105 21.1404 46.5826C21.1155 46.8548 21.1523 47.1291 21.2482 47.3852C21.3441 47.6413 21.4966 47.8728 21.6944 48.0626C22.9737 49.2951 25.1639 50.007 27.6734 50.007C30.1829 50.007 32.3625 49.2881 33.6372 48.0509C33.9345 47.7633 34.1256 47.3843 34.1795 46.9753C34.2334 46.5663 34.147 46.1512 33.9341 45.7972V45.7972Z"/><path d="M55.244 12.7689C54.7323 9.99811 51.3648 8.33378 45.225 7.8109C44.6745 7.76421 43.0782 7.6475 42.1955 7.61365C41.6154 6.76723 40.9618 5.97288 40.2424 5.2397C38.0601 3.0212 35.3205 1.42383 32.3078 0.613324C29.2952 -0.19718 26.1193 -0.191277 23.1098 0.630413C20.1002 1.4521 17.3666 3.05964 15.1926 5.28623C13.0186 7.51282 11.4834 10.2773 10.7463 13.2929C9.68998 13.7119 8.60662 14.1881 7.67584 14.6316C2.11701 17.2787 -0.444097 20.0215 0.0641329 22.7864C0.572362 25.5513 3.93747 27.2215 10.0832 27.7385C11.251 27.8377 12.494 27.8926 13.7969 27.9043H13.8262C13.9319 28.042 14.0387 28.1797 14.149 28.3139C14.4675 28.703 14.8016 29.0788 15.1514 29.4414C15.5162 29.9238 15.8182 30.4501 16.0505 31.0077C16.8486 32.7257 17.4014 35.0413 17.7677 36.7383C17.7855 36.853 17.8122 36.9662 17.8475 37.0768C18.0913 37.9707 18.573 38.7828 19.2419 39.4274C21.0553 41.4349 24.3958 42.4374 27.7374 42.4374C31.079 42.4374 34.4195 41.4349 36.2329 39.4274C36.9011 38.7822 37.3826 37.9704 37.6273 37.0768C37.6626 36.9662 37.6893 36.853 37.7072 36.7383C38.0734 35.0413 38.6262 32.7257 39.4243 31.0077C39.6557 30.4499 39.9574 29.9235 40.3222 29.4414C40.6736 29.0804 41.0081 28.7045 41.3258 28.3139C41.9646 27.5286 42.5341 26.6898 43.0277 25.8069C43.6562 24.6838 44.157 23.4945 44.5207 22.2612C45.624 21.8282 46.6675 21.3788 47.637 20.9178C53.19 18.2708 55.7511 15.5268 55.244 12.7689ZM27.7362 3.27892C29.7986 3.28046 31.8359 3.72893 33.7062 4.59309C35.5765 5.45725 37.235 6.71636 38.5662 8.28275C39.8973 9.84915 40.8692 11.6852 41.4141 13.6631C41.959 15.641 42.0638 17.7132 41.7213 19.7355L41.5629 19.7915C41.3563 19.8693 41.1478 19.9429 40.9373 20.0121C39.9052 20.3669 38.8316 20.7073 37.7165 21.0334C34.7304 21.8966 31.7012 22.6053 28.6412 23.1564C25.7068 23.6898 22.8253 24.0749 20.0964 24.3072C18.8397 24.4145 17.6186 24.4881 16.4331 24.5278C16.1502 24.5371 15.8674 24.5464 15.5892 24.5523H15.5211C14.2503 22.4102 13.5716 19.972 13.5538 17.485C13.5361 14.9979 14.1799 12.5505 15.4201 10.3906C16.6602 8.23081 18.4526 6.43543 20.6156 5.18649C22.7785 3.93755 25.2351 3.27945 27.7362 3.27892V3.27892ZM10.3649 24.404C4.89994 23.9372 3.59005 22.8517 3.59005 21.9799C3.59005 20.9178 4.17692 19.9958 9.12306 17.6428C9.47518 17.4759 9.87778 17.2927 10.2569 17.1258C10.2569 17.2098 10.2569 17.295 10.2569 17.3791C10.2518 19.833 10.772 22.2599 11.7828 24.4986H11.7229C11.264 24.4741 10.8097 24.4402 10.3649 24.4064V24.404ZM39.0628 25.8618C38.7976 26.1991 38.4912 26.6928 37.483 27.9031C36.7355 28.8023 36.1553 29.8267 35.7693 30.9283V30.9283C35.497 31.6624 35.2611 32.4164 35.0545 33.1622C34.7822 34.1484 34.5604 35.1183 34.369 36.003V36.0124L34.301 36.1594C34.1149 36.6856 33.7634 37.1382 33.2986 37.4503V37.4503C32.2328 38.3571 29.9863 38.8088 27.7398 38.8088C25.4932 38.8088 23.2455 38.3571 22.1797 37.4503C21.7146 37.1382 21.3627 36.6856 21.1762 36.1594V36.1594L21.1081 36.0124C21.1077 36.0093 21.1077 36.0061 21.1081 36.003C20.9168 35.1183 20.6938 34.1484 20.4215 33.1622C20.2161 32.4164 19.9802 31.6624 19.7078 30.9283C19.3225 29.8267 18.7426 28.8022 17.9954 27.9031C17.966 27.8681 17.939 27.8342 17.9108 27.8016L18.1339 27.7899H18.216C19.4977 27.716 20.8135 27.6082 22.1633 27.4666C24.4638 27.2238 26.843 26.883 29.2551 26.4454C30.9112 26.1442 32.5415 25.8058 34.1179 25.4358C35.3652 25.1432 36.5811 24.832 37.7658 24.5021C38.5718 24.2764 39.3606 24.043 40.1321 23.8018L40.3668 23.7294L40.4279 23.7096C40.0404 24.4672 39.5847 25.1883 39.0663 25.8641L39.0628 25.8618ZM46.1804 17.9043C45.858 18.0599 45.5266 18.212 45.1862 18.3606C45.2042 18.0377 45.2132 17.7121 45.2132 17.3837C45.2161 15.2581 44.8254 13.1502 44.0606 11.1652C44.3529 11.1862 44.6569 11.2236 44.8904 11.2434C50.3554 11.7103 51.8672 12.644 51.9141 13.4482C51.9763 14.5278 51.1265 15.5467 46.1804 17.9043Z"/><path d="M246.206 23.9084C246.965 22.4625 248.112 21.2536 249.52 20.4156C250.927 19.5777 252.54 19.1433 254.18 19.1605C255.713 19.1605 257.05 19.4597 258.193 20.0581C259.261 20.5936 260.196 21.3558 260.934 22.2908V19.8573C260.934 19.6521 261.016 19.4553 261.162 19.3101C261.308 19.165 261.506 19.0835 261.712 19.0835H264.223C264.429 19.0835 264.627 19.165 264.773 19.3101C264.919 19.4553 265.001 19.6521 265.001 19.8573V38.4649C265.001 38.6708 264.919 38.8682 264.773 39.0137C264.626 39.1593 264.428 39.2411 264.221 39.2411H261.715C261.508 39.2411 261.309 39.1593 261.163 39.0137C261.016 38.8682 260.934 38.6708 260.934 38.4649V35.9696C260.249 36.8838 259.318 37.6456 258.141 38.2548C256.963 38.8641 255.619 39.1687 254.109 39.1687C252.485 39.1824 250.891 38.7372 249.512 37.8849C248.12 37.029 247.018 35.8334 246.206 34.2983C245.394 32.7631 244.987 31.0225 244.985 29.0765C244.985 27.132 245.392 25.4094 246.206 23.9084ZM260.103 25.6661C259.599 24.7325 258.846 23.9543 257.928 23.4159C257.049 22.9045 256.048 22.6372 255.029 22.6421C253.992 22.633 252.971 22.9047 252.077 23.4282C251.183 23.9516 250.449 24.7071 249.954 25.6136C249.4 26.587 249.123 27.7417 249.123 29.0777C249.123 30.4136 249.4 31.5854 249.954 32.5931C250.457 33.5476 251.216 34.345 252.146 34.897C253.018 35.4147 254.014 35.6881 255.029 35.6883C256.048 35.6932 257.049 35.4259 257.928 34.9145C258.85 34.3726 259.602 33.5877 260.103 32.6468C260.657 31.65 260.934 30.4829 260.934 29.1454C260.934 27.8078 260.657 26.6481 260.103 25.6661V25.6661Z"/><path d="M184.825 24.0054C185.585 22.5596 186.731 21.3509 188.138 20.5129C189.546 19.675 191.158 19.2405 192.799 19.2575C194.331 19.2575 195.67 19.5567 196.813 20.155C197.88 20.6905 198.816 21.4528 199.553 22.3878V19.9555C199.553 19.8538 199.574 19.7532 199.613 19.6593C199.652 19.5654 199.709 19.4801 199.781 19.4083C199.854 19.3364 199.939 19.2794 200.034 19.2405C200.128 19.2017 200.229 19.1816 200.332 19.1816H202.842C203.049 19.1816 203.247 19.2632 203.393 19.4083C203.538 19.5534 203.62 19.7502 203.62 19.9555V38.5619C203.62 38.7677 203.538 38.9652 203.392 39.1107C203.245 39.2563 203.047 39.338 202.84 39.338H200.334C200.127 39.338 199.928 39.2563 199.782 39.1107C199.636 38.9652 199.553 38.7677 199.553 38.5619V36.0666C198.87 36.9808 197.938 37.7426 196.76 38.3518C195.582 38.9611 194.238 39.2645 192.728 39.2622C191.105 39.2759 189.511 38.8307 188.132 37.9783C186.722 37.1041 185.579 35.8641 184.825 34.3917C184.015 32.8589 183.609 31.1199 183.609 29.1746C183.609 27.2294 184.015 25.5063 184.825 24.0054ZM198.722 25.7631C198.218 24.8297 197.465 24.0516 196.548 23.5129C195.668 23.0015 194.667 22.7342 193.648 22.7391C192.611 22.73 191.59 23.0017 190.696 23.5251C189.802 24.0486 189.068 24.8041 188.573 25.7106C188.019 26.684 187.742 27.8387 187.742 29.1746C187.742 30.5106 188.019 31.6828 188.573 32.6912C189.077 33.6458 189.837 34.4428 190.769 34.994C191.641 35.5116 192.637 35.7851 193.652 35.7853C194.671 35.7901 195.672 35.5229 196.551 35.0115C197.472 34.4695 198.225 33.6847 198.726 32.7437C199.28 31.747 199.557 30.5799 199.557 29.2423C199.557 27.9048 199.279 26.7451 198.722 25.7631V25.7631Z"/><path d="M126.786 24.004C127.545 22.558 128.692 21.3491 130.099 20.5112C131.507 19.6732 133.12 19.2388 134.76 19.2561C136.293 19.2561 137.631 19.5552 138.774 20.1536C139.841 20.6891 140.777 21.4513 141.515 22.3863V19.954C141.517 19.7496 141.599 19.5541 141.745 19.4102C141.891 19.2663 142.089 19.1857 142.294 19.186H144.805C145.011 19.186 145.209 19.2676 145.355 19.4127C145.501 19.5578 145.583 19.7546 145.583 19.9598V38.5605C145.583 38.7664 145.5 38.9638 145.354 39.1093C145.207 39.2549 145.009 39.3366 144.801 39.3366H142.294C142.192 39.3366 142.09 39.3165 141.996 39.2775C141.901 39.2385 141.815 39.1813 141.742 39.1093C141.67 39.0372 141.612 38.9516 141.573 38.8575C141.534 38.7633 141.514 38.6624 141.514 38.5605V36.0651C140.83 36.9794 139.899 37.7411 138.72 38.3504C137.542 38.9596 136.198 39.2631 134.69 39.2607C133.064 39.2756 131.468 38.8303 130.087 37.9769C128.678 37.1018 127.536 35.862 126.781 34.3903C125.968 32.8559 125.562 31.1153 125.562 29.1685C125.562 27.2218 125.97 25.5002 126.786 24.004ZM140.684 25.7617C140.179 24.8283 139.427 24.0501 138.509 23.5114C137.629 23 136.628 22.7328 135.609 22.7376C134.571 22.7287 133.551 23.0006 132.657 23.524C131.764 24.0475 131.03 24.8028 130.535 25.7091C129.981 26.6825 129.704 27.8372 129.704 29.1732C129.704 30.5092 129.981 31.6814 130.535 32.6898C131.037 33.6441 131.796 34.4412 132.727 34.9925C133.598 35.5102 134.594 35.7837 135.609 35.7838C136.628 35.7887 137.629 35.5214 138.509 35.01C139.431 34.4681 140.183 33.6832 140.684 32.7423C141.237 31.7456 141.514 30.5784 141.515 29.2409C141.516 27.9034 141.239 26.7436 140.684 25.7617V25.7617Z"/><path d="M65.4715 24.0054C66.2306 22.5594 67.3774 21.3506 68.7849 20.5128C70.1923 19.675 71.8056 19.2409 73.4459 19.2587C74.978 19.2587 76.316 19.5575 77.4601 20.155C78.528 20.6902 79.4645 21.4525 80.2031 22.3878V19.9555C80.2029 19.8539 80.2229 19.7533 80.2619 19.6594C80.3009 19.5655 80.3581 19.4802 80.4303 19.4084C80.5024 19.3365 80.5881 19.2795 80.6825 19.2406C80.7768 19.2017 80.878 19.1816 80.9801 19.1816H83.4896C83.5918 19.1815 83.693 19.2014 83.7875 19.2402C83.882 19.2791 83.9679 19.3361 84.0402 19.4079C84.1125 19.4798 84.1698 19.5652 84.2088 19.6591C84.2479 19.7531 84.2679 19.8538 84.2677 19.9555V38.5619C84.2677 38.7677 84.1855 38.9652 84.0391 39.1107C83.8927 39.2563 83.6942 39.338 83.4872 39.338H80.9824C80.7756 39.3377 80.5774 39.2558 80.4313 39.1103C80.2852 38.9648 80.2031 38.7675 80.2031 38.5619V36.0666C79.5192 36.9808 78.5876 37.7426 77.4084 38.3518C76.2292 38.9611 74.8849 39.2645 73.3754 39.2622C71.7515 39.2761 70.1571 38.8309 68.7779 37.9783C67.3689 37.1032 66.226 35.8634 65.4715 34.3917C64.6577 32.8573 64.2512 31.1168 64.252 29.17C64.2527 27.2232 64.6592 25.5017 65.4715 24.0054ZM79.3697 25.7631C78.8645 24.83 78.1124 24.0519 77.1948 23.5129C76.3151 23.0015 75.3135 22.7342 74.2945 22.7391C73.2781 22.7336 72.2781 22.9944 71.3953 23.4954C70.4782 24.0205 69.7253 24.7881 69.2204 25.7129C68.6664 26.6863 68.3894 27.841 68.3894 29.177C68.3894 30.513 68.6664 31.6851 69.2204 32.6935C69.7228 33.6481 70.4818 34.4453 71.4129 34.9963C72.284 35.514 73.2797 35.7874 74.2945 35.7876C75.3135 35.7924 76.3151 35.5252 77.1948 35.0138C78.116 34.4715 78.8687 33.6868 79.3697 32.7461C79.9222 31.7493 80.1992 30.5822 80.2007 29.2447C80.2023 27.9071 79.9253 26.7466 79.3697 25.7631V25.7631Z"/><path d="M117.544 20.2063C118.759 20.8401 119.756 21.8194 120.409 23.0191C121.104 24.264 121.451 25.7646 121.451 27.5207V38.5606C121.451 38.7666 121.369 38.9641 121.223 39.1099C121.077 39.2556 120.878 39.3376 120.671 39.338H118.233C118.026 39.3376 117.827 39.2556 117.681 39.1099C117.535 38.9641 117.452 38.7666 117.452 38.5606V28.1183C117.452 26.3839 117.016 25.0534 116.144 24.1267C115.271 23.2 114.081 22.737 112.572 22.7378C111.063 22.7378 109.866 23.2008 108.983 24.1267C108.099 25.0526 107.657 26.3832 107.656 28.1183V38.5606C107.656 38.7666 107.574 38.9641 107.428 39.1099C107.282 39.2556 107.083 39.3376 106.876 39.338H104.442C104.234 39.3376 104.036 39.2556 103.89 39.1099C103.743 38.9641 103.661 38.7666 103.661 38.5606V28.1183C103.661 26.3839 103.225 25.0534 102.352 24.1267C101.48 23.2 100.289 22.737 98.7806 22.7378C97.2712 22.7378 96.0748 23.2008 95.1913 24.1267C94.3079 25.0526 93.8658 26.3832 93.865 28.1183V38.5606C93.865 38.7666 93.7828 38.9641 93.6365 39.1099C93.4901 39.2556 93.2916 39.3376 93.0845 39.338H90.6196C90.4123 39.338 90.2134 39.2561 90.0669 39.1103C89.9203 38.9645 89.8379 38.7668 89.8379 38.5606V19.9624C89.8379 19.7562 89.9203 19.5585 90.0669 19.4127C90.2134 19.267 90.4123 19.1851 90.6196 19.1851H93.0845C93.2916 19.1854 93.4901 19.2674 93.6365 19.4131C93.7828 19.5589 93.865 19.7564 93.865 19.9624V21.7889C94.5416 20.9778 95.402 20.3378 96.3756 19.9215C97.401 19.4743 98.5096 19.2469 99.6292 19.2539C101.186 19.2539 102.576 19.5819 103.802 20.2378C105.014 20.8805 106 21.874 106.632 23.0868C107.219 21.9134 108.138 20.9797 109.389 20.2857C110.621 19.6021 112.01 19.2474 113.421 19.2563C114.956 19.2563 116.33 19.5729 117.544 20.2063Z"/><path d="M155.205 12.9305V38.5608C155.205 38.7676 155.122 38.9659 154.975 39.1121C154.828 39.2583 154.629 39.3404 154.421 39.3404H151.956C151.748 39.3404 151.549 39.2583 151.402 39.1121C151.254 38.9659 151.172 38.7676 151.172 38.5608V12.9305C151.172 12.7238 151.254 12.5254 151.402 12.3792C151.549 12.233 151.748 12.1509 151.956 12.1509H154.421C154.629 12.1509 154.828 12.233 154.975 12.3792C155.122 12.5254 155.205 12.7238 155.205 12.9305Z"/><path d="M172.649 20.1543C173.814 20.7503 174.727 21.4926 175.386 22.3812V19.6665C175.386 19.4603 175.469 19.2626 175.615 19.1168C175.762 18.9711 175.961 18.8892 176.168 18.8892H178.679C178.886 18.8895 179.084 18.9715 179.231 19.1172C179.377 19.263 179.459 19.4605 179.459 19.6665V39.2615C179.459 41.0425 179.082 42.6306 178.328 44.0257C177.58 45.4133 176.444 46.5554 175.057 47.3135C173.631 48.1103 171.928 48.5087 169.947 48.5087C167.306 48.5087 165.115 47.8936 163.374 46.6634C161.903 45.6255 160.968 44.2751 160.57 42.6123C160.543 42.4979 160.542 42.3789 160.567 42.264C160.593 42.1491 160.644 42.0415 160.717 41.9491C160.79 41.8567 160.883 41.782 160.99 41.7305C161.096 41.679 161.213 41.6521 161.331 41.6518H163.856C164.01 41.653 164.16 41.6988 164.288 41.7836C164.416 41.8683 164.517 41.9884 164.577 42.1291C164.928 42.9204 165.523 43.576 166.363 44.0957C167.364 44.7182 168.56 45.0294 169.952 45.0294C171.579 45.0294 172.893 44.5369 173.895 43.5519C174.896 42.5668 175.395 41.1367 175.392 39.2615V36.0379C174.708 36.949 173.784 37.7146 172.62 38.3348C171.456 38.9549 170.13 39.2661 168.642 39.2685C167.001 39.284 165.39 38.839 163.992 37.9846C162.575 37.1139 161.425 35.8734 160.668 34.398C159.855 32.8636 159.448 31.1231 159.448 29.1763C159.448 27.2295 159.855 25.5064 160.668 24.007C161.427 22.5611 162.574 21.3522 163.981 20.5143C165.389 19.6763 167.002 19.2419 168.642 19.2591C170.147 19.2576 171.483 19.556 172.649 20.1543ZM174.559 25.7624C174.054 24.8291 173.303 24.0509 172.385 23.5122C171.505 23.0008 170.504 22.7335 169.485 22.7384C168.468 22.7329 167.469 22.9938 166.586 23.4947C165.669 24.0198 164.916 24.7874 164.411 25.7122C163.855 26.6856 163.578 27.8403 163.58 29.1763C163.581 30.5123 163.858 31.6844 164.411 32.6928C164.913 33.6474 165.672 34.4446 166.603 34.9956C167.474 35.5134 168.47 35.7868 169.485 35.7869C170.504 35.7918 171.505 35.5245 172.385 35.0131C173.306 34.4711 174.059 33.6862 174.559 32.7454C175.113 31.7486 175.39 30.5815 175.39 29.244C175.39 27.9064 175.113 26.7459 174.559 25.7624V25.7624Z"/><path d="M237.015 20.2073C238.23 20.8408 239.227 21.8202 239.879 23.0201C240.576 24.265 240.924 25.7656 240.923 27.5217V38.5616C240.923 38.7676 240.841 38.9651 240.694 39.1109C240.548 39.2566 240.349 39.3386 240.142 39.3389H237.708C237.501 39.3386 237.302 39.2566 237.156 39.1109C237.01 38.9651 236.927 38.7676 236.927 38.5616V28.1193C236.927 26.3849 236.491 25.0544 235.619 24.1277C234.746 23.201 233.556 22.738 232.047 22.7388C230.537 22.7388 229.341 23.2018 228.458 24.1277C227.574 25.0536 227.132 26.3841 227.131 28.1193V38.5616C227.131 38.7678 227.049 38.9655 226.902 39.1113C226.756 39.257 226.557 39.3389 226.35 39.3389H223.916C223.709 39.3386 223.511 39.2566 223.364 39.1109C223.218 38.9651 223.136 38.7676 223.136 38.5616V28.1193C223.136 26.3849 222.7 25.0544 221.827 24.1277C220.955 23.201 219.764 22.738 218.255 22.7388C216.746 22.7388 215.55 23.2018 214.666 24.1277C213.783 25.0536 213.341 26.3841 213.34 28.1193V38.5616C213.34 38.7678 213.257 38.9655 213.111 39.1113C212.964 39.257 212.765 39.3389 212.558 39.3389H210.093C209.886 39.3389 209.687 39.257 209.54 39.1113C209.394 38.9655 209.312 38.7678 209.312 38.5616V19.9622C209.312 19.7562 209.394 19.5588 209.541 19.4133C209.687 19.2678 209.886 19.186 210.093 19.186H212.558C212.765 19.186 212.964 19.2678 213.11 19.4133C213.257 19.5588 213.34 19.7562 213.34 19.9622V21.7899C214.016 20.9787 214.877 20.3387 215.85 19.9225C216.876 19.4748 217.984 19.2469 219.104 19.2537C220.66 19.2537 222.051 19.5821 223.277 20.2388C224.488 20.8811 225.475 21.8742 226.105 23.0866C226.695 21.9148 227.614 20.9811 228.864 20.2855C230.095 19.599 231.484 19.2415 232.896 19.2479C234.425 19.2541 235.799 19.5739 237.015 20.2073Z"/></svg>
+    </a>
+  </div>
+</header>
+
+<main id="top">
+  <!-- Hero -->
+  <section class="hero">
+    <div class="wrap">
+      <h1 aria-label="Amalgama Day">
+        <span class="line one" aria-hidden="true"><span class="word"><span class="txt">Amalgama</span>
+          <span class="shape s-flower" data-shape="flower"></span>
+          <span class="shape s-ostar" data-shape="star" data-variant="stroke" data-stroke="#ffbbc3"></span>
+        </span></span>
+        <span class="line two" aria-hidden="true"><span class="word accent"><span class="txt">Day</span>
+          <span class="shape s-clover" data-shape="clover"></span>
+          <span class="shape s-osquare" data-shape="square" data-variant="stroke" data-stroke="#95b3ff"></span>
+        </span></span>
+      </h1>
+      <div class="hero-foot">
+        <p class="when"><strong data-bind="date"></strong></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Qué esperar -->
+  <section class="hstrip" id="que-esperar" aria-label="Qué esperar">
+    <div class="hstrip-track">
+      <div class="hp hp-intro">
+        <div class="tags">
+          <span class="tag t1">Qué esperar</span>
+          <span class="tag t2">del día</span>
+        </div>
+      </div>
+      <div class="hp hp-stage" aria-hidden="true">
+        <div class="stage">
+          <div class="orb"></div>
+          <span class="shape s-star" data-shape="star"></span>
+          <span class="shape s-sun" data-shape="sun"></span>
+          <span class="shape s-square" data-shape="square"></span>
+          <span class="shape s-flower2" data-shape="flower"></span>
+          <span class="shape s-oclover" data-shape="clover" data-variant="stroke" data-stroke="#85d0bd"></span>
+        </div>
+      </div>
+      <div class="hp hp-say">
+        <p class="say">
+          <span class="w">Preparate</span>
+          <span class="ish shape" data-shape="clover"></span>
+          <span class="w">para</span> <span class="w">pasar</span>
+          <span class="ish shape" data-shape="star" data-variant="stroke" data-stroke="#95b3ff"></span>
+          <span class="w">un</span> <span class="w">día</span> <span class="w">completo,</span>
+          <span class="ish shape" data-shape="flower" data-variant="stroke" data-stroke="#fe9aa6"></span>
+          <span class="stk" style="--c: var(--yellow)">mucha comida</span><span class="w punct">,</span>
+          <span class="ish shape" data-shape="sun"></span>
+          <span class="stk" style="--c: var(--blue)">juegos</span>
+          <span class="ish shape" data-shape="star"></span>
+          <span class="w">y</span>
+          <span class="stk" style="--c: var(--green)">tiempo libre</span><span class="w punct">.</span>
+          <span class="ish shape" data-shape="square"></span>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Oficina nueva -->
+  <section class="office-sec" aria-label="Oficina nueva">
+      <div class="office">
+        <span class="shape s-clover2" data-shape="clover" data-variant="tint" aria-hidden="true"></span>
+        <span class="shape s-flower3" data-shape="flower" data-variant="tint" aria-hidden="true"></span>
+        <span class="shape s-star3" data-shape="star" data-variant="tint" aria-hidden="true"></span>
+        <div class="office-inner">
+        <div class="content">
+          <h3>Estrenamos oficina nueva</h3>
+          <p>Perfecto para ya ponernos cómodos en nuestra nueva casita.</p>
+        </div>
+        <a class="btn" data-maps href="https://www.google.com/maps/search/?api=1&amp;query=Hernan+Wineberg+2737%2C+B1636DIE+Olivos%2C+Provincia+de+Buenos+Aires" target="_blank" rel="noopener">Cómo llegar
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>
+        </a>
+        </div>
+      </div>
+  </section>
+
+  <!-- Cronograma -->
+  <section class="block" id="cronograma">
+    <div class="wrap schedule">
+      <div class="sched-side">
+        <h2>Así va a ser el día</h2>
+        <p class="note">{ Horarios tentativos, pueden moverse un poco }</p>
+        <div class="progress" aria-hidden="true"><i id="schedProgress"></i></div>
+      </div>
+      <ol class="slots">
+        <li class="slot is-active" data-time="10:00" style="--c: var(--yellow)">
+          <span class="time">10:00</span>
+          <h3>Llegada y desayuno</h3>
+          <p>Empezamos el día con un desayuno para todos.</p>
+        </li>
+        <li class="slot" data-time="11:00" style="--c: var(--blue)">
+          <span class="time">11:00 – 13:00</span>
+          <h3>Juegos por equipos</h3>
+          <p>Los cinco equipos se enfrentan durante la mañana.</p>
+        </li>
+        <li class="slot" data-time="13:30" style="--c: var(--coral)">
+          <span class="time">13:30 – 14:00</span>
+          <h3>Almuerzo</h3>
+          <p>Paramos para comer todos juntos.</p>
+        </li>
+        <li class="slot" data-time="14:00" style="--c: var(--green)">
+          <span class="time">Después</span>
+          <h3>Tiempo libre</h3>
+          <p>El resto del día es para disfrutar la oficina nueva.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- Equipos -->
+  <section class="block" id="equipos">
+    <div class="wrap">
+      <div class="teams-head">
+        <h2>Buscá tu equipo</h2>
+      </div>
+      <div class="teams" id="teams"></div>
+    </div>
+  </section>
+
+
+  <!-- Closing -->
+  <section class="closing">
+    <div class="wrap">
+      <h2>Nos vemos el <span class="accent">viernes.</span></h2>
+      <div class="row">
+        <p class="addr"><strong data-bind="date"></strong><span data-bind="place"></span></p>
+        <a class="btn solid" data-maps href="https://www.google.com/maps/search/?api=1&amp;query=Hernan+Wineberg+2737%2C+B1636DIE+Olivos%2C+Provincia+de+Buenos+Aires" target="_blank" rel="noopener">Cómo llegar
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>
+        </a>
+      </div>
+      <div class="foot">
+        <span class="logo" aria-label="Amalgama"><svg viewBox="0 0 265 50" fill="currentColor" aria-hidden="true"><path d="M33.9341 45.7972C33.7929 45.5633 33.6008 45.3639 33.3719 45.2136C33.0639 45.0117 32.7032 44.9042 32.3343 44.9043C31.8725 44.9056 31.4284 45.0817 31.0925 45.3968C30.5455 45.9092 29.2004 46.2477 27.6652 46.2535C26.1299 46.2593 24.7801 45.9104 24.2308 45.4003C23.8939 45.0864 23.4495 44.9116 22.9878 44.9113C22.619 44.9124 22.2586 45.0212 21.9514 45.2241C21.7232 45.3763 21.5319 45.5773 21.3916 45.8123C21.2513 46.0473 21.1655 46.3105 21.1404 46.5826C21.1155 46.8548 21.1523 47.1291 21.2482 47.3852C21.3441 47.6413 21.4966 47.8728 21.6944 48.0626C22.9737 49.2951 25.1639 50.007 27.6734 50.007C30.1829 50.007 32.3625 49.2881 33.6372 48.0509C33.9345 47.7633 34.1256 47.3843 34.1795 46.9753C34.2334 46.5663 34.147 46.1512 33.9341 45.7972V45.7972Z"/><path d="M55.244 12.7689C54.7323 9.99811 51.3648 8.33378 45.225 7.8109C44.6745 7.76421 43.0782 7.6475 42.1955 7.61365C41.6154 6.76723 40.9618 5.97288 40.2424 5.2397C38.0601 3.0212 35.3205 1.42383 32.3078 0.613324C29.2952 -0.19718 26.1193 -0.191277 23.1098 0.630413C20.1002 1.4521 17.3666 3.05964 15.1926 5.28623C13.0186 7.51282 11.4834 10.2773 10.7463 13.2929C9.68998 13.7119 8.60662 14.1881 7.67584 14.6316C2.11701 17.2787 -0.444097 20.0215 0.0641329 22.7864C0.572362 25.5513 3.93747 27.2215 10.0832 27.7385C11.251 27.8377 12.494 27.8926 13.7969 27.9043H13.8262C13.9319 28.042 14.0387 28.1797 14.149 28.3139C14.4675 28.703 14.8016 29.0788 15.1514 29.4414C15.5162 29.9238 15.8182 30.4501 16.0505 31.0077C16.8486 32.7257 17.4014 35.0413 17.7677 36.7383C17.7855 36.853 17.8122 36.9662 17.8475 37.0768C18.0913 37.9707 18.573 38.7828 19.2419 39.4274C21.0553 41.4349 24.3958 42.4374 27.7374 42.4374C31.079 42.4374 34.4195 41.4349 36.2329 39.4274C36.9011 38.7822 37.3826 37.9704 37.6273 37.0768C37.6626 36.9662 37.6893 36.853 37.7072 36.7383C38.0734 35.0413 38.6262 32.7257 39.4243 31.0077C39.6557 30.4499 39.9574 29.9235 40.3222 29.4414C40.6736 29.0804 41.0081 28.7045 41.3258 28.3139C41.9646 27.5286 42.5341 26.6898 43.0277 25.8069C43.6562 24.6838 44.157 23.4945 44.5207 22.2612C45.624 21.8282 46.6675 21.3788 47.637 20.9178C53.19 18.2708 55.7511 15.5268 55.244 12.7689ZM27.7362 3.27892C29.7986 3.28046 31.8359 3.72893 33.7062 4.59309C35.5765 5.45725 37.235 6.71636 38.5662 8.28275C39.8973 9.84915 40.8692 11.6852 41.4141 13.6631C41.959 15.641 42.0638 17.7132 41.7213 19.7355L41.5629 19.7915C41.3563 19.8693 41.1478 19.9429 40.9373 20.0121C39.9052 20.3669 38.8316 20.7073 37.7165 21.0334C34.7304 21.8966 31.7012 22.6053 28.6412 23.1564C25.7068 23.6898 22.8253 24.0749 20.0964 24.3072C18.8397 24.4145 17.6186 24.4881 16.4331 24.5278C16.1502 24.5371 15.8674 24.5464 15.5892 24.5523H15.5211C14.2503 22.4102 13.5716 19.972 13.5538 17.485C13.5361 14.9979 14.1799 12.5505 15.4201 10.3906C16.6602 8.23081 18.4526 6.43543 20.6156 5.18649C22.7785 3.93755 25.2351 3.27945 27.7362 3.27892V3.27892ZM10.3649 24.404C4.89994 23.9372 3.59005 22.8517 3.59005 21.9799C3.59005 20.9178 4.17692 19.9958 9.12306 17.6428C9.47518 17.4759 9.87778 17.2927 10.2569 17.1258C10.2569 17.2098 10.2569 17.295 10.2569 17.3791C10.2518 19.833 10.772 22.2599 11.7828 24.4986H11.7229C11.264 24.4741 10.8097 24.4402 10.3649 24.4064V24.404ZM39.0628 25.8618C38.7976 26.1991 38.4912 26.6928 37.483 27.9031C36.7355 28.8023 36.1553 29.8267 35.7693 30.9283V30.9283C35.497 31.6624 35.2611 32.4164 35.0545 33.1622C34.7822 34.1484 34.5604 35.1183 34.369 36.003V36.0124L34.301 36.1594C34.1149 36.6856 33.7634 37.1382 33.2986 37.4503V37.4503C32.2328 38.3571 29.9863 38.8088 27.7398 38.8088C25.4932 38.8088 23.2455 38.3571 22.1797 37.4503C21.7146 37.1382 21.3627 36.6856 21.1762 36.1594V36.1594L21.1081 36.0124C21.1077 36.0093 21.1077 36.0061 21.1081 36.003C20.9168 35.1183 20.6938 34.1484 20.4215 33.1622C20.2161 32.4164 19.9802 31.6624 19.7078 30.9283C19.3225 29.8267 18.7426 28.8022 17.9954 27.9031C17.966 27.8681 17.939 27.8342 17.9108 27.8016L18.1339 27.7899H18.216C19.4977 27.716 20.8135 27.6082 22.1633 27.4666C24.4638 27.2238 26.843 26.883 29.2551 26.4454C30.9112 26.1442 32.5415 25.8058 34.1179 25.4358C35.3652 25.1432 36.5811 24.832 37.7658 24.5021C38.5718 24.2764 39.3606 24.043 40.1321 23.8018L40.3668 23.7294L40.4279 23.7096C40.0404 24.4672 39.5847 25.1883 39.0663 25.8641L39.0628 25.8618ZM46.1804 17.9043C45.858 18.0599 45.5266 18.212 45.1862 18.3606C45.2042 18.0377 45.2132 17.7121 45.2132 17.3837C45.2161 15.2581 44.8254 13.1502 44.0606 11.1652C44.3529 11.1862 44.6569 11.2236 44.8904 11.2434C50.3554 11.7103 51.8672 12.644 51.9141 13.4482C51.9763 14.5278 51.1265 15.5467 46.1804 17.9043Z"/><path d="M246.206 23.9084C246.965 22.4625 248.112 21.2536 249.52 20.4156C250.927 19.5777 252.54 19.1433 254.18 19.1605C255.713 19.1605 257.05 19.4597 258.193 20.0581C259.261 20.5936 260.196 21.3558 260.934 22.2908V19.8573C260.934 19.6521 261.016 19.4553 261.162 19.3101C261.308 19.165 261.506 19.0835 261.712 19.0835H264.223C264.429 19.0835 264.627 19.165 264.773 19.3101C264.919 19.4553 265.001 19.6521 265.001 19.8573V38.4649C265.001 38.6708 264.919 38.8682 264.773 39.0137C264.626 39.1593 264.428 39.2411 264.221 39.2411H261.715C261.508 39.2411 261.309 39.1593 261.163 39.0137C261.016 38.8682 260.934 38.6708 260.934 38.4649V35.9696C260.249 36.8838 259.318 37.6456 258.141 38.2548C256.963 38.8641 255.619 39.1687 254.109 39.1687C252.485 39.1824 250.891 38.7372 249.512 37.8849C248.12 37.029 247.018 35.8334 246.206 34.2983C245.394 32.7631 244.987 31.0225 244.985 29.0765C244.985 27.132 245.392 25.4094 246.206 23.9084ZM260.103 25.6661C259.599 24.7325 258.846 23.9543 257.928 23.4159C257.049 22.9045 256.048 22.6372 255.029 22.6421C253.992 22.633 252.971 22.9047 252.077 23.4282C251.183 23.9516 250.449 24.7071 249.954 25.6136C249.4 26.587 249.123 27.7417 249.123 29.0777C249.123 30.4136 249.4 31.5854 249.954 32.5931C250.457 33.5476 251.216 34.345 252.146 34.897C253.018 35.4147 254.014 35.6881 255.029 35.6883C256.048 35.6932 257.049 35.4259 257.928 34.9145C258.85 34.3726 259.602 33.5877 260.103 32.6468C260.657 31.65 260.934 30.4829 260.934 29.1454C260.934 27.8078 260.657 26.6481 260.103 25.6661V25.6661Z"/><path d="M184.825 24.0054C185.585 22.5596 186.731 21.3509 188.138 20.5129C189.546 19.675 191.158 19.2405 192.799 19.2575C194.331 19.2575 195.67 19.5567 196.813 20.155C197.88 20.6905 198.816 21.4528 199.553 22.3878V19.9555C199.553 19.8538 199.574 19.7532 199.613 19.6593C199.652 19.5654 199.709 19.4801 199.781 19.4083C199.854 19.3364 199.939 19.2794 200.034 19.2405C200.128 19.2017 200.229 19.1816 200.332 19.1816H202.842C203.049 19.1816 203.247 19.2632 203.393 19.4083C203.538 19.5534 203.62 19.7502 203.62 19.9555V38.5619C203.62 38.7677 203.538 38.9652 203.392 39.1107C203.245 39.2563 203.047 39.338 202.84 39.338H200.334C200.127 39.338 199.928 39.2563 199.782 39.1107C199.636 38.9652 199.553 38.7677 199.553 38.5619V36.0666C198.87 36.9808 197.938 37.7426 196.76 38.3518C195.582 38.9611 194.238 39.2645 192.728 39.2622C191.105 39.2759 189.511 38.8307 188.132 37.9783C186.722 37.1041 185.579 35.8641 184.825 34.3917C184.015 32.8589 183.609 31.1199 183.609 29.1746C183.609 27.2294 184.015 25.5063 184.825 24.0054ZM198.722 25.7631C198.218 24.8297 197.465 24.0516 196.548 23.5129C195.668 23.0015 194.667 22.7342 193.648 22.7391C192.611 22.73 191.59 23.0017 190.696 23.5251C189.802 24.0486 189.068 24.8041 188.573 25.7106C188.019 26.684 187.742 27.8387 187.742 29.1746C187.742 30.5106 188.019 31.6828 188.573 32.6912C189.077 33.6458 189.837 34.4428 190.769 34.994C191.641 35.5116 192.637 35.7851 193.652 35.7853C194.671 35.7901 195.672 35.5229 196.551 35.0115C197.472 34.4695 198.225 33.6847 198.726 32.7437C199.28 31.747 199.557 30.5799 199.557 29.2423C199.557 27.9048 199.279 26.7451 198.722 25.7631V25.7631Z"/><path d="M126.786 24.004C127.545 22.558 128.692 21.3491 130.099 20.5112C131.507 19.6732 133.12 19.2388 134.76 19.2561C136.293 19.2561 137.631 19.5552 138.774 20.1536C139.841 20.6891 140.777 21.4513 141.515 22.3863V19.954C141.517 19.7496 141.599 19.5541 141.745 19.4102C141.891 19.2663 142.089 19.1857 142.294 19.186H144.805C145.011 19.186 145.209 19.2676 145.355 19.4127C145.501 19.5578 145.583 19.7546 145.583 19.9598V38.5605C145.583 38.7664 145.5 38.9638 145.354 39.1093C145.207 39.2549 145.009 39.3366 144.801 39.3366H142.294C142.192 39.3366 142.09 39.3165 141.996 39.2775C141.901 39.2385 141.815 39.1813 141.742 39.1093C141.67 39.0372 141.612 38.9516 141.573 38.8575C141.534 38.7633 141.514 38.6624 141.514 38.5605V36.0651C140.83 36.9794 139.899 37.7411 138.72 38.3504C137.542 38.9596 136.198 39.2631 134.69 39.2607C133.064 39.2756 131.468 38.8303 130.087 37.9769C128.678 37.1018 127.536 35.862 126.781 34.3903C125.968 32.8559 125.562 31.1153 125.562 29.1685C125.562 27.2218 125.97 25.5002 126.786 24.004ZM140.684 25.7617C140.179 24.8283 139.427 24.0501 138.509 23.5114C137.629 23 136.628 22.7328 135.609 22.7376C134.571 22.7287 133.551 23.0006 132.657 23.524C131.764 24.0475 131.03 24.8028 130.535 25.7091C129.981 26.6825 129.704 27.8372 129.704 29.1732C129.704 30.5092 129.981 31.6814 130.535 32.6898C131.037 33.6441 131.796 34.4412 132.727 34.9925C133.598 35.5102 134.594 35.7837 135.609 35.7838C136.628 35.7887 137.629 35.5214 138.509 35.01C139.431 34.4681 140.183 33.6832 140.684 32.7423C141.237 31.7456 141.514 30.5784 141.515 29.2409C141.516 27.9034 141.239 26.7436 140.684 25.7617V25.7617Z"/><path d="M65.4715 24.0054C66.2306 22.5594 67.3774 21.3506 68.7849 20.5128C70.1923 19.675 71.8056 19.2409 73.4459 19.2587C74.978 19.2587 76.316 19.5575 77.4601 20.155C78.528 20.6902 79.4645 21.4525 80.2031 22.3878V19.9555C80.2029 19.8539 80.2229 19.7533 80.2619 19.6594C80.3009 19.5655 80.3581 19.4802 80.4303 19.4084C80.5024 19.3365 80.5881 19.2795 80.6825 19.2406C80.7768 19.2017 80.878 19.1816 80.9801 19.1816H83.4896C83.5918 19.1815 83.693 19.2014 83.7875 19.2402C83.882 19.2791 83.9679 19.3361 84.0402 19.4079C84.1125 19.4798 84.1698 19.5652 84.2088 19.6591C84.2479 19.7531 84.2679 19.8538 84.2677 19.9555V38.5619C84.2677 38.7677 84.1855 38.9652 84.0391 39.1107C83.8927 39.2563 83.6942 39.338 83.4872 39.338H80.9824C80.7756 39.3377 80.5774 39.2558 80.4313 39.1103C80.2852 38.9648 80.2031 38.7675 80.2031 38.5619V36.0666C79.5192 36.9808 78.5876 37.7426 77.4084 38.3518C76.2292 38.9611 74.8849 39.2645 73.3754 39.2622C71.7515 39.2761 70.1571 38.8309 68.7779 37.9783C67.3689 37.1032 66.226 35.8634 65.4715 34.3917C64.6577 32.8573 64.2512 31.1168 64.252 29.17C64.2527 27.2232 64.6592 25.5017 65.4715 24.0054ZM79.3697 25.7631C78.8645 24.83 78.1124 24.0519 77.1948 23.5129C76.3151 23.0015 75.3135 22.7342 74.2945 22.7391C73.2781 22.7336 72.2781 22.9944 71.3953 23.4954C70.4782 24.0205 69.7253 24.7881 69.2204 25.7129C68.6664 26.6863 68.3894 27.841 68.3894 29.177C68.3894 30.513 68.6664 31.6851 69.2204 32.6935C69.7228 33.6481 70.4818 34.4453 71.4129 34.9963C72.284 35.514 73.2797 35.7874 74.2945 35.7876C75.3135 35.7924 76.3151 35.5252 77.1948 35.0138C78.116 34.4715 78.8687 33.6868 79.3697 32.7461C79.9222 31.7493 80.1992 30.5822 80.2007 29.2447C80.2023 27.9071 79.9253 26.7466 79.3697 25.7631V25.7631Z"/><path d="M117.544 20.2063C118.759 20.8401 119.756 21.8194 120.409 23.0191C121.104 24.264 121.451 25.7646 121.451 27.5207V38.5606C121.451 38.7666 121.369 38.9641 121.223 39.1099C121.077 39.2556 120.878 39.3376 120.671 39.338H118.233C118.026 39.3376 117.827 39.2556 117.681 39.1099C117.535 38.9641 117.452 38.7666 117.452 38.5606V28.1183C117.452 26.3839 117.016 25.0534 116.144 24.1267C115.271 23.2 114.081 22.737 112.572 22.7378C111.063 22.7378 109.866 23.2008 108.983 24.1267C108.099 25.0526 107.657 26.3832 107.656 28.1183V38.5606C107.656 38.7666 107.574 38.9641 107.428 39.1099C107.282 39.2556 107.083 39.3376 106.876 39.338H104.442C104.234 39.3376 104.036 39.2556 103.89 39.1099C103.743 38.9641 103.661 38.7666 103.661 38.5606V28.1183C103.661 26.3839 103.225 25.0534 102.352 24.1267C101.48 23.2 100.289 22.737 98.7806 22.7378C97.2712 22.7378 96.0748 23.2008 95.1913 24.1267C94.3079 25.0526 93.8658 26.3832 93.865 28.1183V38.5606C93.865 38.7666 93.7828 38.9641 93.6365 39.1099C93.4901 39.2556 93.2916 39.3376 93.0845 39.338H90.6196C90.4123 39.338 90.2134 39.2561 90.0669 39.1103C89.9203 38.9645 89.8379 38.7668 89.8379 38.5606V19.9624C89.8379 19.7562 89.9203 19.5585 90.0669 19.4127C90.2134 19.267 90.4123 19.1851 90.6196 19.1851H93.0845C93.2916 19.1854 93.4901 19.2674 93.6365 19.4131C93.7828 19.5589 93.865 19.7564 93.865 19.9624V21.7889C94.5416 20.9778 95.402 20.3378 96.3756 19.9215C97.401 19.4743 98.5096 19.2469 99.6292 19.2539C101.186 19.2539 102.576 19.5819 103.802 20.2378C105.014 20.8805 106 21.874 106.632 23.0868C107.219 21.9134 108.138 20.9797 109.389 20.2857C110.621 19.6021 112.01 19.2474 113.421 19.2563C114.956 19.2563 116.33 19.5729 117.544 20.2063Z"/><path d="M155.205 12.9305V38.5608C155.205 38.7676 155.122 38.9659 154.975 39.1121C154.828 39.2583 154.629 39.3404 154.421 39.3404H151.956C151.748 39.3404 151.549 39.2583 151.402 39.1121C151.254 38.9659 151.172 38.7676 151.172 38.5608V12.9305C151.172 12.7238 151.254 12.5254 151.402 12.3792C151.549 12.233 151.748 12.1509 151.956 12.1509H154.421C154.629 12.1509 154.828 12.233 154.975 12.3792C155.122 12.5254 155.205 12.7238 155.205 12.9305Z"/><path d="M172.649 20.1543C173.814 20.7503 174.727 21.4926 175.386 22.3812V19.6665C175.386 19.4603 175.469 19.2626 175.615 19.1168C175.762 18.9711 175.961 18.8892 176.168 18.8892H178.679C178.886 18.8895 179.084 18.9715 179.231 19.1172C179.377 19.263 179.459 19.4605 179.459 19.6665V39.2615C179.459 41.0425 179.082 42.6306 178.328 44.0257C177.58 45.4133 176.444 46.5554 175.057 47.3135C173.631 48.1103 171.928 48.5087 169.947 48.5087C167.306 48.5087 165.115 47.8936 163.374 46.6634C161.903 45.6255 160.968 44.2751 160.57 42.6123C160.543 42.4979 160.542 42.3789 160.567 42.264C160.593 42.1491 160.644 42.0415 160.717 41.9491C160.79 41.8567 160.883 41.782 160.99 41.7305C161.096 41.679 161.213 41.6521 161.331 41.6518H163.856C164.01 41.653 164.16 41.6988 164.288 41.7836C164.416 41.8683 164.517 41.9884 164.577 42.1291C164.928 42.9204 165.523 43.576 166.363 44.0957C167.364 44.7182 168.56 45.0294 169.952 45.0294C171.579 45.0294 172.893 44.5369 173.895 43.5519C174.896 42.5668 175.395 41.1367 175.392 39.2615V36.0379C174.708 36.949 173.784 37.7146 172.62 38.3348C171.456 38.9549 170.13 39.2661 168.642 39.2685C167.001 39.284 165.39 38.839 163.992 37.9846C162.575 37.1139 161.425 35.8734 160.668 34.398C159.855 32.8636 159.448 31.1231 159.448 29.1763C159.448 27.2295 159.855 25.5064 160.668 24.007C161.427 22.5611 162.574 21.3522 163.981 20.5143C165.389 19.6763 167.002 19.2419 168.642 19.2591C170.147 19.2576 171.483 19.556 172.649 20.1543ZM174.559 25.7624C174.054 24.8291 173.303 24.0509 172.385 23.5122C171.505 23.0008 170.504 22.7335 169.485 22.7384C168.468 22.7329 167.469 22.9938 166.586 23.4947C165.669 24.0198 164.916 24.7874 164.411 25.7122C163.855 26.6856 163.578 27.8403 163.58 29.1763C163.581 30.5123 163.858 31.6844 164.411 32.6928C164.913 33.6474 165.672 34.4446 166.603 34.9956C167.474 35.5134 168.47 35.7868 169.485 35.7869C170.504 35.7918 171.505 35.5245 172.385 35.0131C173.306 34.4711 174.059 33.6862 174.559 32.7454C175.113 31.7486 175.39 30.5815 175.39 29.244C175.39 27.9064 175.113 26.7459 174.559 25.7624V25.7624Z"/><path d="M237.015 20.2073C238.23 20.8408 239.227 21.8202 239.879 23.0201C240.576 24.265 240.924 25.7656 240.923 27.5217V38.5616C240.923 38.7676 240.841 38.9651 240.694 39.1109C240.548 39.2566 240.349 39.3386 240.142 39.3389H237.708C237.501 39.3386 237.302 39.2566 237.156 39.1109C237.01 38.9651 236.927 38.7676 236.927 38.5616V28.1193C236.927 26.3849 236.491 25.0544 235.619 24.1277C234.746 23.201 233.556 22.738 232.047 22.7388C230.537 22.7388 229.341 23.2018 228.458 24.1277C227.574 25.0536 227.132 26.3841 227.131 28.1193V38.5616C227.131 38.7678 227.049 38.9655 226.902 39.1113C226.756 39.257 226.557 39.3389 226.35 39.3389H223.916C223.709 39.3386 223.511 39.2566 223.364 39.1109C223.218 38.9651 223.136 38.7676 223.136 38.5616V28.1193C223.136 26.3849 222.7 25.0544 221.827 24.1277C220.955 23.201 219.764 22.738 218.255 22.7388C216.746 22.7388 215.55 23.2018 214.666 24.1277C213.783 25.0536 213.341 26.3841 213.34 28.1193V38.5616C213.34 38.7678 213.257 38.9655 213.111 39.1113C212.964 39.257 212.765 39.3389 212.558 39.3389H210.093C209.886 39.3389 209.687 39.257 209.54 39.1113C209.394 38.9655 209.312 38.7678 209.312 38.5616V19.9622C209.312 19.7562 209.394 19.5588 209.541 19.4133C209.687 19.2678 209.886 19.186 210.093 19.186H212.558C212.765 19.186 212.964 19.2678 213.11 19.4133C213.257 19.5588 213.34 19.7562 213.34 19.9622V21.7899C214.016 20.9787 214.877 20.3387 215.85 19.9225C216.876 19.4748 217.984 19.2469 219.104 19.2537C220.66 19.2537 222.051 19.5821 223.277 20.2388C224.488 20.8811 225.475 21.8742 226.105 23.0866C226.695 21.9148 227.614 20.9811 228.864 20.2855C230.095 19.599 231.484 19.2415 232.896 19.2479C234.425 19.2541 235.799 19.5739 237.015 20.2073Z"/></svg></span>
+        <span>Amalgama Day · <span data-bind="date"></span></span>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script>
+/* ====== Datos del evento: editá acá ====== */
+const EVENT = {
+  date: "Viernes 27 · 10:00 AM",
+  place: "Hernán Wineberg 2737, Olivos",
+  mapsQuery: "Hernan Wineberg 2737, B1636DIE Olivos, Provincia de Buenos Aires"
+};
+
+const TEAMS = [
+  { name: "Equipo 1", shape: "flower", color: "var(--coral)", people: ["Gon", "Jose", "Alelu", "Ori", "Tony", "Franco Zalazar", "Javi"] },
+  { name: "Equipo 2", shape: "clover", color: "var(--green)", people: ["Joe", "Abril Remy", "Marian", "Eche", "Chano", "Manu Oreguy", "Fausti"] },
+  { name: "Equipo 3", shape: "star", color: "var(--blue)", people: ["Tom", "Agus", "Ani", "Estefi", "Pelli", "Tomi Romero", "Renu"] },
+  { name: "Equipo 4", shape: "sun", color: "var(--yellow)", people: ["April", "Ivo", "Flor", "Pity", "Nacho Dondo", "Gabo"] },
+  { name: "Equipo 5", shape: "square", color: "var(--blush)", people: ["Clari", "Chebu", "Diana", "Rama", "Dami", "Pedri", "Mechi"] }
+];
+
+const SHAPES = {
+  flower: { vb: "0 0 334 324", fill: "url(#g-flower)" },
+  clover: { vb: "0 0 351 353", fill: "url(#g-clover)" },
+  star:   { vb: "0 0 317 312", fill: "url(#g-star)" },
+  sun:    { vb: "0 0 205 205", fill: "url(#g-sun)" },
+  square: { vb: "0 0 323 323", fill: "url(#g-square)" }
+};
+const shapeSvg = (name, fill) => `<svg viewBox="${SHAPES[name].vb}" aria-hidden="true"><use href="#p-${name}" fill="${fill || SHAPES[name].fill}"/></svg>`;
+
+/* Bind event data */
+const mapsUrl = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(EVENT.mapsQuery);
+document.querySelectorAll("[data-maps]").forEach(a => a.href = mapsUrl);
+document.querySelectorAll('[data-bind="date"]').forEach(el => el.textContent = EVENT.date);
+document.querySelectorAll('[data-bind="place"]').forEach(el => el.textContent = EVENT.place);
+
+/* Build shapes */
+/* Outline-only version of a shape; stroke width is kept at ~3px whatever the rendered size */
+const strokeSvg = (name, color) => `<svg viewBox="${SHAPES[name].vb}" aria-hidden="true"><use href="#p-${name}" fill="none" stroke="${color}" stroke-width="10" stroke-linejoin="round"/></svg>`;
+function fitStrokes() {
+  document.querySelectorAll('.shape[data-variant="stroke"] use').forEach(u => {
+    const svg = u.ownerSVGElement, w = u.closest(".shape").offsetWidth;
+    if (w) u.setAttribute("stroke-width", (3 * svg.viewBox.baseVal.width / w).toFixed(1));
+  });
+}
+document.querySelectorAll(".shape[data-shape]").forEach(el => {
+  const v = el.dataset.variant, name = el.dataset.shape;
+  const svg = v === "stroke" ? strokeSvg(name, el.dataset.stroke || "#edf2ff") : shapeSvg(name, v === "tint" ? "url(#g-tint)" : null);
+  el.innerHTML = `<span class="float"><span class="spin">${svg}</span></span>`;
+});
+fitStrokes();
+addEventListener("resize", fitStrokes);
+if (document.fonts) document.fonts.ready.then(fitStrokes);
+
+/* Split hero words into masked letters, each with a hidden shape slot */
+const SLOT_SHAPES = [["sun"], ["star"], ["flower"], ["clover", "stroke", "#85d0bd"], ["square"], ["star", "stroke", "#ffbbc3"]];
+document.querySelectorAll(".hero h1 .txt").forEach(txt => {
+  txt.outerHTML = [...txt.textContent].map((ch, i) => {
+    const [n, v, c] = SLOT_SHAPES[(ch.charCodeAt(0) + i) % SLOT_SHAPES.length];
+    return `<span class="ch"><span class="mask"><span class="ci">${ch}</span></span><span class="slot">${v ? strokeSvg(n, c) : shapeSvg(n)}</span></span>`;
+  }).join("");
+});
+/* Split the strip's sentence words into letters */
+document.querySelectorAll(".say .w").forEach(w => {
+  w.innerHTML = [...w.textContent].map(ch => `<span class="ci">${ch}</span>`).join("");
+});
+
+/* Build teams */
+document.getElementById("teams").innerHTML = TEAMS.map((t, i) => `
+  <article class="team" style="--c:${t.color}">
+    <span class="t-shape" data-hover>${shapeSvg(t.shape)}</span>
+    <span class="num">${t.people.length} personas</span>
+    <h3>${t.name}</h3>
+    <ul>${t.people.map((p, n) => `<li><span class="av">${n + 1}</span><span>${p}</span></li>`).join("")}</ul>
+  </article>`).join("");
+
+
+/* ====== Motion ====== */
+const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+if (window.gsap) {
+  gsap.registerPlugin(ScrollTrigger);
+
+  /* Hero title loop (GSAP-style): letters build in random order, some first appear
+     as an Amalgama shape that pops and gives way to the letter; hold; letters leave; repeat. */
+  if (!reduce) {
+    const letters = gsap.utils.toArray(".hero h1 .ci");
+    const slots = gsap.utils.toArray(".hero h1 .slot");
+    const wide = letters.map((l, i) => i).filter(i => !/[il]/i.test(letters[i].textContent));
+    gsap.set(slots, { visibility: "visible", scale: 0 });
+    const cycle = () => {
+      const tl = gsap.timeline({ onComplete: cycle });
+      const order = gsap.utils.shuffle(letters.map((l, i) => i));
+      const swapped = gsap.utils.shuffle(wide.slice()).slice(0, 3);
+      order.forEach((i, k) => {
+        const t = k * 0.08;
+        if (swapped.includes(i)) {
+          tl.fromTo(slots[i], { scale: 0, rotation: -140 }, { scale: 1, rotation: 0, duration: 0.5, ease: "back.out(2.2)" }, t)
+            .to(slots[i], { scale: 0, rotation: 120, duration: 0.3, ease: "power2.in" }, t + 1.1)
+            .fromTo(letters[i], { yPercent: 120 }, { yPercent: 0, duration: 0.7, ease: "power4.out" }, t + 1.25);
+        } else {
+          tl.fromTo(letters[i], { yPercent: 120 }, { yPercent: 0, duration: 0.85, ease: "power4.out" }, t);
+        }
+      });
+      const out = order.length * 0.08 + 2 + 4;            // build + hold
+      gsap.utils.shuffle(letters.map((l, i) => i)).forEach((i, k) => {
+        tl.to(letters[i], { yPercent: -120, duration: 0.5, ease: "power3.in" }, out + k * 0.05);
+      });
+      tl.to({}, { duration: 0.6 });
+    };
+    gsap.set(letters, { yPercent: 120 });
+    cycle();
+    gsap.from(".hero .word > .shape .spin", { scale: 0, rotation: -120, duration: 1.2, ease: "back.out(1.8)", stagger: 0.15, delay: 0.6 });
+  }
+
+  /* Shapes: idle float + hover "moves" (magnetic pull, spin, squash) */
+  document.querySelectorAll(".shape, .t-shape").forEach((el, i) => {
+    const float = el.querySelector(".float");
+    const spin = el.querySelector(".spin") || el.querySelector("svg");
+    if (!reduce && float) {
+      gsap.to(float, { y: gsap.utils.random(-14, -6), rotation: gsap.utils.random(-6, 6), duration: gsap.utils.random(2.4, 3.6), ease: "sine.inOut", yoyo: true, repeat: -1, delay: i * 0.2 });
+    }
+    if (reduce) return;
+    const qx = gsap.quickTo(spin, "x", { duration: 0.5, ease: "power3.out" });
+    const qy = gsap.quickTo(spin, "y", { duration: 0.5, ease: "power3.out" });
+    el.addEventListener("mouseenter", () => {
+      gsap.to(spin, { rotation: "+=" + (i % 2 ? -72 : 72), scale: 1.14, duration: 0.7, ease: "back.out(3)", overwrite: "auto" });
+    });
+    el.addEventListener("mousemove", e => {
+      const r = el.getBoundingClientRect();
+      qx((e.clientX - (r.left + r.width / 2)) * 0.35);
+      qy((e.clientY - (r.top + r.height / 2)) * 0.35);
+    });
+    el.addEventListener("mouseleave", () => {
+      qx(0); qy(0);
+      gsap.to(spin, { scale: 1, duration: 1.1, ease: "elastic.out(1, 0.35)", overwrite: "auto" });
+    });
+    el.addEventListener("click", () => {
+      gsap.fromTo(spin, { scaleX: 1.25, scaleY: 0.8 }, { scaleX: 1, scaleY: 1, rotation: "+=180", duration: 0.9, ease: "elastic.out(1, 0.4)" });
+    });
+  });
+  /* Team cards also spin their shape on card hover */
+  if (!reduce) document.querySelectorAll(".team").forEach(card => {
+    const s = card.querySelector(".t-shape svg");
+    card.addEventListener("mouseenter", () => gsap.to(s, { rotation: "+=90", duration: 0.8, ease: "back.out(2.5)" }));
+  });
+
+  if (!reduce) {
+    /* Qué esperar: pinned strip that slides sideways while you scroll */
+    document.documentElement.classList.add("js-strip");
+    const strip = document.querySelector(".hstrip");
+    const track = strip.querySelector(".hstrip-track");
+    const barH = () => document.querySelector(".locbar").offsetHeight;
+    const dist = () => Math.max(0, track.scrollWidth - innerWidth);
+    const slide = gsap.to(track, {
+      x: () => -dist(), ease: "none",
+      scrollTrigger: { trigger: strip, start: () => strip.offsetHeight > innerHeight - barH() ? "top " + barH() : "clamp(bottom bottom)", end: () => "+=" + dist(), pin: true, scrub: 1, invalidateOnRefresh: true }
+    });
+    const along = (el, start, end) => ({ trigger: el, containerAnimation: slide, start, end, scrub: true });
+
+    gsap.from(".hp-intro .tag", { rotation: 0, scale: 0.6, opacity: 0, stagger: 0.12, duration: 0.7, ease: "back.out(2.4)",
+      scrollTrigger: { trigger: strip, start: "top 80%", toggleActions: "play none none none" } });
+    gsap.utils.toArray(".stage .shape").forEach((s, i) => {
+      gsap.fromTo(s, { yPercent: [40, -30, 50, -40, 30][i] }, { yPercent: [-30, 30, -25, 35, -20][i], rotation: [90, -60, 45, -90, 120][i], ease: "none", scrollTrigger: along(s, "left right", "right left") });
+    });
+    gsap.from(".stage .orb", { yPercent: 40, ease: "none", scrollTrigger: along(".stage", "left right", "center center") });
+    /* Sentence: letters jump into place word by word; stickers pop; shapes roll */
+    gsap.utils.toArray(".say .w").forEach(w => {
+      gsap.fromTo(w.querySelectorAll(".ci"),
+        { yPercent: gsap.utils.random(-90, 90, true), rotation: gsap.utils.random(-25, 25, true), color: "#5b6390" },
+        { yPercent: 0, rotation: 0, color: "#edf2ff", stagger: 0.05, ease: "back.out(2)", scrollTrigger: along(w, "left 95%", "left 60%") });
+    });
+    gsap.utils.toArray(".say .stk").forEach(s => {
+      gsap.from(s, { scale: 0.4, rotation: -18, opacity: 0, ease: "back.out(2)", scrollTrigger: along(s, "left 95%", "left 70%") });
+    });
+    gsap.utils.toArray(".say .ish").forEach(s => {
+      gsap.fromTo(s, { scale: 0 }, { scale: 1, ease: "back.out(2.5)", scrollTrigger: along(s, "left 95%", "left 65%") });
+      gsap.fromTo(s, { rotation: -180 }, { rotation: 180, ease: "none", scrollTrigger: along(s, "left right", "right left") });
+    });
+    if (document.fonts) document.fonts.ready.then(() => ScrollTrigger.refresh());
+
+    /* Office band: shapes drift with scroll and keep turning slowly */
+    gsap.utils.toArray(".office .shape").forEach((s, i) => {
+      gsap.to(s, { rotation: i % 2 ? -360 : 360, duration: 26 + i * 8, ease: "none", repeat: -1 });
+      gsap.fromTo(s, { yPercent: [30, -20, 40][i] }, { yPercent: [-30, 25, -35][i], xPercent: [-10, 15, 20][i], ease: "none", scrollTrigger: { trigger: ".office", start: "top bottom", end: "bottom top", scrub: true } });
+    });
+  }
+
+  /* Cronograma: active slot + progress */
+  const slots = gsap.utils.toArray(".slot");
+  const setActive = slot => slots.forEach(s => s.classList.toggle("is-active", s === slot));
+  slots.forEach(slot => ScrollTrigger.create({
+    trigger: slot, start: "top 55%", end: "bottom 55%",
+    onEnter: () => setActive(slot), onEnterBack: () => setActive(slot)
+  }));
+  ScrollTrigger.create({
+    trigger: ".slots", start: "top 60%", end: "bottom 60%",
+    onUpdate: self => gsap.set("#schedProgress", { scaleX: self.progress })
+  });
+
+}
+</script>
+</body>
+</html>
