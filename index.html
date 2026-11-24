@@ -113,16 +113,16 @@ a { color: inherit; }
   font: 900 clamp(50px, 14.5vw, 236px)/.9 var(--f-display);
   letter-spacing: -.055em;
 }
-.hero h1 .line { display: block; }
-.hero h1 .word { position: relative; display: inline-block; }
+.hero h1 .line, .closing h2 .line { display: block; }
+.hero h1 .word, .closing h2 .word { position: relative; display: inline-block; }
 .hero h1 .accent { color: inherit; }
 /* Each letter rises inside its own mask; .slot is the shape that briefly takes the letter's place */
-.hero h1 .ch { position: relative; display: inline-block; }
-.hero h1 .mask { display: inline-block; overflow: hidden; vertical-align: top; padding-bottom: .14em; margin-bottom: -.14em; }
-.hero h1 .ci { display: inline-block; }
-.hero h1 .slot { position: absolute; left: 50%; top: 52%; width: .5em; height: .5em; margin: -.25em 0 0 -.25em; pointer-events: none; visibility: hidden; }
-.hero h1 .slot svg { display: block; width: 100%; height: 100%; overflow: visible; }
-.hero .shape { z-index: 2; }
+.hero h1 .ch, .closing h2 .ch { position: relative; display: inline-block; }
+.hero h1 .mask, .closing h2 .mask { display: inline-block; overflow: hidden; vertical-align: top; padding-bottom: .14em; margin-bottom: -.14em; }
+.hero h1 .ci, .closing h2 .ci { display: inline-block; }
+.hero h1 .slot, .closing h2 .slot { position: absolute; left: 50%; top: 52%; width: .5em; height: .5em; margin: -.25em 0 0 -.25em; pointer-events: none; visibility: hidden; }
+.hero h1 .slot svg, .closing h2 .slot svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.hero .shape, .closing h2 .shape { z-index: 2; }
 .hero .s-flower { width: .44em; aspect-ratio: 334/324; right: -.3em; top: -.26em; }
 .hero .s-ostar { width: .3em; aspect-ratio: 317/312; left: -.4em; top: .22em; }
 .hero .s-clover { width: .5em; aspect-ratio: 1; left: -.62em; bottom: .1em; }
@@ -269,8 +269,15 @@ h3 { font: 800 clamp(22px, 2.2vw, 28px)/1.1 var(--f-display); letter-spacing: -.
 @media (max-width: 420px) { .teams { grid-template-columns: minmax(0, 1fr); } }
 /* ---------- Closing ---------- */
 .closing { padding-block: clamp(80px, 10vw, 140px) 40px; border-top: 1px solid var(--line); }
-.closing h2 { font-size: clamp(48px, 9vw, 140px); max-width: 11ch; }
-.closing h2 .accent { color: var(--blue); }
+.closing h2 {
+  position: relative; margin: 0; text-align: center;
+  font: 900 clamp(44px, 10.5vw, 170px)/.9 var(--f-display);
+  letter-spacing: -.055em; color: var(--ink);
+}
+.closing .s-sun { width: .34em; aspect-ratio: 1; right: -.32em; top: -.22em; }
+.closing .s-oclover { width: .3em; aspect-ratio: 1; left: -.42em; top: .18em; }
+.closing .s-star { width: .44em; aspect-ratio: 317/312; left: -.58em; bottom: .06em; }
+.closing .s-oflower { width: .34em; aspect-ratio: 334/324; right: -.46em; top: .02em; }
 .closing .row { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 28px; margin-top: 40px; }
 .closing .addr { font: 400 15px/1.5 var(--f-mono); color: var(--muted); }
 .closing .addr strong { display: block; color: var(--ink); font: 600 18px/1.4 var(--f-body); }
@@ -467,7 +474,16 @@ h3 { font: 800 clamp(22px, 2.2vw, 28px)/1.1 var(--f-display); letter-spacing: -.
   <!-- Closing -->
   <section class="closing">
     <div class="wrap">
-      <h2>Nos vemos el <span class="accent">viernes.</span></h2>
+      <h2 aria-label="Nos vemos el viernes.">
+        <span class="line one" aria-hidden="true"><span class="word"><span class="txt">Nos vemos</span>
+          <span class="shape s-sun" data-shape="sun"></span>
+          <span class="shape s-oclover" data-shape="clover" data-variant="stroke" data-stroke="#85d0bd"></span>
+        </span></span>
+        <span class="line two" aria-hidden="true"><span class="word"><span class="txt">el viernes.</span>
+          <span class="shape s-star" data-shape="star"></span>
+          <span class="shape s-oflower" data-shape="flower" data-variant="stroke" data-stroke="#fe9aa6"></span>
+        </span></span>
+      </h2>
       <div class="row">
         <p class="addr"><strong data-bind="place"></strong></p>
         <div class="ctas">
@@ -546,10 +562,11 @@ fitStrokes();
 addEventListener("resize", fitStrokes);
 if (document.fonts) document.fonts.ready.then(fitStrokes);
 
-/* Split hero words into masked letters, each with a hidden shape slot */
+/* Split title words (hero + closing) into masked letters, each with a hidden shape slot */
 const SLOT_SHAPES = [["sun"], ["star"], ["flower"], ["clover", "stroke", "#85d0bd"], ["square"], ["star", "stroke", "#ffbbc3"]];
-document.querySelectorAll(".hero h1 .txt").forEach(txt => {
+document.querySelectorAll(".hero h1 .txt, .closing h2 .txt").forEach(txt => {
   txt.outerHTML = [...txt.textContent].map((ch, i) => {
+    if (ch === " ") return " ";
     const [n, v, c] = SLOT_SHAPES[(ch.charCodeAt(0) + i) % SLOT_SHAPES.length];
     return `<span class="ch"><span class="mask"><span class="ci">${ch}</span></span><span class="slot">${v ? strokeSvg(n, c) : shapeSvg(n)}</span></span>`;
   }).join("");
@@ -578,33 +595,42 @@ if (window.gsap) {
   /* Hero title loop (GSAP-style): letters build in random order, some first appear
      as an Amalgama shape that pops and gives way to the letter; hold; letters leave; repeat. */
   if (!reduce) {
-    const letters = gsap.utils.toArray(".hero h1 .ci");
-    const slots = gsap.utils.toArray(".hero h1 .slot");
-    const wide = letters.map((l, i) => i).filter(i => !/[il]/i.test(letters[i].textContent));
-    gsap.set(slots, { visibility: "visible", scale: 0 });
-    const cycle = () => {
-      const tl = gsap.timeline({ onComplete: cycle });
-      const order = gsap.utils.shuffle(letters.map((l, i) => i));
-      const swapped = gsap.utils.shuffle(wide.slice()).slice(0, 3);
-      order.forEach((i, k) => {
-        const t = k * 0.08;
-        if (swapped.includes(i)) {
-          tl.fromTo(slots[i], { scale: 0, rotation: -140 }, { scale: 1, rotation: 0, duration: 0.5, ease: "back.out(2.2)" }, t)
-            .to(slots[i], { scale: 0, rotation: 120, duration: 0.3, ease: "power2.in" }, t + 1.1)
-            .fromTo(letters[i], { yPercent: 120 }, { yPercent: 0, duration: 0.7, ease: "power4.out" }, t + 1.25);
-        } else {
-          tl.fromTo(letters[i], { yPercent: 120 }, { yPercent: 0, duration: 0.85, ease: "power4.out" }, t);
-        }
-      });
-      const out = order.length * 0.08 + 2 + 4;            // build + hold
-      gsap.utils.shuffle(letters.map((l, i) => i)).forEach((i, k) => {
-        tl.to(letters[i], { yPercent: -120, duration: 0.5, ease: "power3.in" }, out + k * 0.05);
-      });
-      tl.to({}, { duration: 0.6 });
+    const titleLoop = root => {
+      const letters = gsap.utils.toArray(root.querySelectorAll(".ci"));
+      const slots = gsap.utils.toArray(root.querySelectorAll(".slot"));
+      const wide = letters.map((l, i) => i).filter(i => !/[il.,]/i.test(letters[i].textContent));
+      gsap.set(slots, { visibility: "visible", scale: 0 });
+      gsap.set(letters, { yPercent: 120 });
+      let tl;
+      const cycle = () => {
+        tl = gsap.timeline({ onComplete: cycle });
+        const order = gsap.utils.shuffle(letters.map((l, i) => i));
+        const swapped = gsap.utils.shuffle(wide.slice()).slice(0, 3);
+        order.forEach((i, k) => {
+          const t = k * 0.08;
+          if (swapped.includes(i)) {
+            tl.fromTo(slots[i], { scale: 0, rotation: -140 }, { scale: 1, rotation: 0, duration: 0.5, ease: "back.out(2.2)" }, t)
+              .to(slots[i], { scale: 0, rotation: 120, duration: 0.3, ease: "power2.in" }, t + 1.1)
+              .fromTo(letters[i], { yPercent: 120 }, { yPercent: 0, duration: 0.7, ease: "power4.out" }, t + 1.25);
+          } else {
+            tl.fromTo(letters[i], { yPercent: 120 }, { yPercent: 0, duration: 0.85, ease: "power4.out" }, t);
+          }
+        });
+        const out = order.length * 0.08 + 2 + 4;            // build + hold
+        gsap.utils.shuffle(letters.map((l, i) => i)).forEach((i, k) => {
+          tl.to(letters[i], { yPercent: -120, duration: 0.5, ease: "power3.in" }, out + k * 0.05);
+        });
+        tl.to({}, { duration: 0.6 });
+      };
+      return { play: () => (tl ? tl.resume() : cycle()), pause: () => tl && tl.pause() };
     };
-    gsap.set(letters, { yPercent: 120 });
-    cycle();
+    titleLoop(document.querySelector(".hero h1")).play();
     gsap.from(".hero .word > .shape .spin", { scale: 0, rotation: -120, duration: 1.2, ease: "back.out(1.8)", stagger: 0.15, delay: 0.6 });
+
+    const closingTitle = titleLoop(document.querySelector(".closing h2"));
+    ScrollTrigger.create({ trigger: ".closing h2", start: "top 85%", end: "bottom top", refreshPriority: -1, onToggle: self => self.isActive ? closingTitle.play() : closingTitle.pause() });
+    gsap.from(".closing .word > .shape .spin", { scale: 0, rotation: -120, duration: 1.2, ease: "back.out(1.8)", stagger: 0.15,
+      scrollTrigger: { trigger: ".closing h2", start: "top 85%", toggleActions: "play none none none", refreshPriority: -1 } });
   }
 
   /* Shapes: idle float + hover "moves" (magnetic pull, spin, squash) */
