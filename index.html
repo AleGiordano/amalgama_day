@@ -96,6 +96,11 @@ a { color: inherit; }
 }
 .btn:hover { background: var(--ink); color: var(--on-accent); }
 .btn svg { width: 16px; height: 16px; }
+.btn .bl { display: inline-flex; align-items: center; white-space: nowrap; }
+.btn .bgap { display: inline-block; width: .28em; white-space: pre; }
+.burst-layer { position: fixed; inset: 0; pointer-events: none; z-index: 80; overflow: hidden; }
+.burst-layer .bp { position: absolute; display: block; }
+.burst-layer .bp svg { display: block; width: 100%; height: 100%; overflow: visible; }
 .btn.solid { background: var(--blue); border-color: var(--blue); color: var(--on-accent); }
 .btn.solid:hover { background: var(--ink); border-color: var(--ink); }
 @media (max-width: 760px) { .nav ul { display: none; } }
@@ -559,6 +564,15 @@ document.querySelectorAll("[data-top]").forEach(a => a.addEventListener("click",
   e.preventDefault();
   scrollTo({ top: 0, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
 }));
+/* Button labels: words split by a gap that opens on hover and lets Amalgama shapes out */
+document.querySelectorAll(".btn").forEach(btn => {
+  const tn = [...btn.childNodes].find(n => n.nodeType === 3 && n.textContent.trim());
+  if (!tn) return;
+  const label = document.createElement("span");
+  label.className = "bl";
+  label.innerHTML = tn.textContent.trim().split(/\s+/).map(w => `<span class="bw">${w}</span>`).join('<span class="bgap"> </span>');
+  btn.replaceChild(label, tn);
+});
 document.querySelectorAll(".mark[data-mark]").forEach(el => el.innerHTML = shapeSvg(el.dataset.mark, "currentColor"));
 fitStrokes();
 addEventListener("resize", fitStrokes);
@@ -705,6 +719,48 @@ if (window.gsap) {
     gsap.utils.toArray(".office .shape").forEach((s, i) => {
       gsap.to(s, { rotation: i % 2 ? -360 : 360, duration: 26 + i * 8, ease: "none", repeat: -1 });
       gsap.fromTo(s, { yPercent: [30, -20, 40][i] }, { yPercent: [-30, 25, -35][i], xPercent: [-10, 15, 20][i], ease: "none", scrollTrigger: { trigger: ".office", start: "top bottom", end: "bottom top", scrub: true } });
+    });
+  }
+
+  /* Buttons: hover opens the gap between the words and a few Amalgama shapes pop out of it */
+  if (!reduce) {
+    const layer = document.body.appendChild(Object.assign(document.createElement("div"), { className: "burst-layer" }));
+    const PIECES = [["star", "stroke", "#85d0bd"], ["flower"], ["clover"], ["square"], ["sun"], ["star"]];
+    const burst = from => {
+      const r = from.getBoundingClientRect();
+      gsap.utils.shuffle(PIECES.slice()).slice(0, 4).forEach(([name, v, c], k) => {
+        const size = gsap.utils.random(18, 38);
+        const bp = document.createElement("span");
+        bp.className = "bp";
+        bp.style.cssText = `width:${size}px;height:${size}px;left:${r.left + r.width / 2 - size / 2}px;top:${r.top + r.height / 2 - size / 2}px`;
+        bp.innerHTML = v ? strokeSvg(name, c).replace('stroke-width="10"', 'stroke-width="34"') : shapeSvg(name);
+        layer.appendChild(bp);
+        gsap.timeline({ onComplete: () => bp.remove() })
+          .fromTo(bp, { x: 0, y: 0, scale: 0, rotation: gsap.utils.random(-90, 90) },
+            { x: gsap.utils.random(-56, 56), y: gsap.utils.random(-120, -60), scale: 1, rotation: "+=" + gsap.utils.random(-220, 220), duration: gsap.utils.random(0.9, 1.3), ease: "power2.out", delay: k * 0.04 })
+          .to(bp, { opacity: 0, scale: 0.5, duration: 0.35, ease: "power1.in" }, "-=0.35");
+      });
+    };
+    document.querySelectorAll(".btn").forEach(btn => {
+      const gaps = btn.querySelectorAll(".bgap");
+      const icon = btn.querySelector("svg");
+      if (!gaps.length) return;
+      const up = btn.hasAttribute("data-top");
+      let busy = false;
+      btn.addEventListener("pointerenter", e => {
+        if (e.pointerType !== "mouse" || busy) return;
+        busy = true;
+        const tl = gsap.timeline({ onComplete: () => { busy = false; } });
+        const w0 = gaps[0].offsetWidth;
+        tl.to(gaps, { width: w0 * 6.5, duration: 0.35, ease: "power3.out" })
+          .add(() => burst(gaps[0]), 0.22)
+          .to(gaps, { width: w0, duration: 0.55, ease: "back.out(2.2)" }, 0.75)
+          .set(gaps, { clearProps: "width" });
+        if (icon) tl.to(icon, { x: up ? 0 : 5, y: -5, opacity: 0, duration: 0.18, ease: "power2.in" }, 0)
+          .set(icon, { x: up ? 0 : -5, y: 5 }, 0.18)
+          .to(icon, { x: 0, y: 0, opacity: 1, duration: 0.3, ease: "power2.out" }, 0.18);
+      });
+      btn.addEventListener("click", () => burst(gaps[0]));
     });
   }
 
