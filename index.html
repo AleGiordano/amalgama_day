@@ -162,6 +162,15 @@ h3 { font: 800 clamp(22px, 2.2vw, 28px)/1.1 var(--f-display); letter-spacing: -.
 .hp { flex: none; }
 .hp-intro { width: min(720px, calc(100vw - 32px)); padding-left: max(0px, calc((100vw - var(--maxw)) / 2)); margin-right: clamp(48px, 10vw, 180px); box-sizing: content-box; }
 .hp-stage { width: min(760px, 90vw, 74svh); }
+@media (max-width: 760px) {
+  .hstrip { overflow: visible; }
+  .hstrip-track { flex-direction: column; align-items: stretch; width: auto; gap: 48px; padding: 64px var(--gutter-r) 72px var(--gutter-l); }
+  .hp-intro { width: auto; padding-left: 0; margin-right: 0; }
+  .hp-stage { width: min(100%, 440px); align-self: center; }
+  .hstrip .say { display: block; white-space: normal; font-size: clamp(32px, 9.4vw, 56px); line-height: 1.2; }
+  .hstrip .say .w, .hstrip .say .stk, .hstrip .say .ish { vertical-align: middle; }
+  .hstrip .say .stk { white-space: nowrap; }
+}
 .say {
   margin: 0; white-space: nowrap; display: flex; align-items: center; gap: .26em;
   font: 800 clamp(48px, 7.4vw, 118px)/1 var(--f-display); letter-spacing: -.045em; color: var(--ink);
@@ -690,36 +699,62 @@ if (window.gsap) {
   });
 
   if (!reduce) {
-    /* Qué esperar: pinned strip that slides sideways while you scroll */
-    document.documentElement.classList.add("js-strip");
-    const strip = document.querySelector(".hstrip");
-    const track = strip.querySelector(".hstrip-track");
-    const barH = () => document.querySelector(".locbar").offsetHeight;
-    const dist = () => Math.max(0, track.scrollWidth - innerWidth);
-    /* The intro tags pop when the strip locks in place, close to the middle of the screen */
-    const tagsIn = gsap.from(".hp-intro .tag", { rotation: 0, scale: 0.6, opacity: 0, stagger: 0.12, duration: 0.7, ease: "back.out(2.4)", paused: true });
-    const slide = gsap.to(track, {
-      x: () => -dist(), ease: "none",
-      scrollTrigger: { trigger: strip, start: () => strip.offsetHeight > innerHeight - barH() ? "top " + barH() : "clamp(bottom bottom)", end: () => "+=" + dist(), pin: true, scrub: 1, invalidateOnRefresh: true, onEnter: () => tagsIn.play() }
-    });
-    const along = (el, start, end) => ({ trigger: el, containerAnimation: slide, start, end, scrub: true });
+    /* Qué esperar: on wide screens a pinned strip that slides sideways while you scroll;
+       on phones the pieces stack one under the other and animate in as they arrive */
+    const mm = gsap.matchMedia();
+    mm.add("(min-width: 761px)", () => {
+      /* Qué esperar: pinned strip that slides sideways while you scroll */
+      document.documentElement.classList.add("js-strip");
+      const strip = document.querySelector(".hstrip");
+      const track = strip.querySelector(".hstrip-track");
+      const barH = () => document.querySelector(".locbar").offsetHeight;
+      const dist = () => Math.max(0, track.scrollWidth - innerWidth);
+      /* The intro tags pop when the strip locks in place, close to the middle of the screen */
+      const tagsIn = gsap.from(".hp-intro .tag", { rotation: 0, scale: 0.6, opacity: 0, stagger: 0.12, duration: 0.7, ease: "back.out(2.4)", paused: true });
+      const slide = gsap.to(track, {
+        x: () => -dist(), ease: "none",
+        scrollTrigger: { trigger: strip, start: () => strip.offsetHeight > innerHeight - barH() ? "top " + barH() : "clamp(bottom bottom)", end: () => "+=" + dist(), pin: true, scrub: 1, invalidateOnRefresh: true, onEnter: () => tagsIn.play() }
+      });
+      const along = (el, start, end) => ({ trigger: el, containerAnimation: slide, start, end, scrub: true });
 
-    gsap.utils.toArray(".stage .shape").forEach((s, i) => {
-      gsap.fromTo(s, { yPercent: [40, -30, 50, -40, 30][i] }, { yPercent: [-30, 30, -25, 35, -20][i], rotation: [90, -60, 45, -90, 120][i], ease: "none", scrollTrigger: along(s, "left right", "right left") });
+      gsap.utils.toArray(".stage .shape").forEach((s, i) => {
+        gsap.fromTo(s, { yPercent: [40, -30, 50, -40, 30][i] }, { yPercent: [-30, 30, -25, 35, -20][i], rotation: [90, -60, 45, -90, 120][i], ease: "none", scrollTrigger: along(s, "left right", "right left") });
+      });
+      gsap.from(".stage .orb", { yPercent: 40, ease: "none", scrollTrigger: along(".stage", "left right", "center center") });
+      /* Sentence: letters jump into place word by word; stickers pop; shapes roll */
+      gsap.utils.toArray(".say .w").forEach(w => {
+        gsap.fromTo(w.querySelectorAll(".ci"),
+          { yPercent: gsap.utils.random(-90, 90, true), rotation: gsap.utils.random(-25, 25, true), color: "#5b6390" },
+          { yPercent: 0, rotation: 0, color: "#edf2ff", stagger: 0.05, ease: "back.out(2)", scrollTrigger: along(w, "left 80%", "left 45%") });
+      });
+      gsap.utils.toArray(".say .stk").forEach(s => {
+        gsap.from(s, { scale: 0.4, rotation: -18, opacity: 0, ease: "back.out(2)", scrollTrigger: along(s, "left 80%", "left 52%") });
+      });
+      gsap.utils.toArray(".say .ish").forEach(s => {
+        gsap.fromTo(s, { scale: 0 }, { scale: 1, ease: "back.out(2.5)", scrollTrigger: along(s, "left 80%", "left 50%") });
+        gsap.fromTo(s, { rotation: -180 }, { rotation: 180, ease: "none", scrollTrigger: along(s, "left right", "right left") });
+      });
+      return () => document.documentElement.classList.remove("js-strip");
     });
-    gsap.from(".stage .orb", { yPercent: 40, ease: "none", scrollTrigger: along(".stage", "left right", "center center") });
-    /* Sentence: letters jump into place word by word; stickers pop; shapes roll */
-    gsap.utils.toArray(".say .w").forEach(w => {
-      gsap.fromTo(w.querySelectorAll(".ci"),
-        { yPercent: gsap.utils.random(-90, 90, true), rotation: gsap.utils.random(-25, 25, true), color: "#5b6390" },
-        { yPercent: 0, rotation: 0, color: "#edf2ff", stagger: 0.05, ease: "back.out(2)", scrollTrigger: along(w, "left 80%", "left 45%") });
-    });
-    gsap.utils.toArray(".say .stk").forEach(s => {
-      gsap.from(s, { scale: 0.4, rotation: -18, opacity: 0, ease: "back.out(2)", scrollTrigger: along(s, "left 80%", "left 52%") });
-    });
-    gsap.utils.toArray(".say .ish").forEach(s => {
-      gsap.fromTo(s, { scale: 0 }, { scale: 1, ease: "back.out(2.5)", scrollTrigger: along(s, "left 80%", "left 50%") });
-      gsap.fromTo(s, { rotation: -180 }, { rotation: 180, ease: "none", scrollTrigger: along(s, "left right", "right left") });
+    mm.add("(max-width: 760px)", () => {
+      const reveal = (el, start = "top 85%", end = "top 55%") => ({ trigger: el, start, end, scrub: true });
+      gsap.from(".hp-intro .tag", { rotation: 0, scale: 0.6, opacity: 0, stagger: 0.12, duration: 0.7, ease: "back.out(2.4)",
+        scrollTrigger: { trigger: ".hp-intro", start: "top 75%", toggleActions: "play none none none" } });
+      gsap.from(".stage .orb", { yPercent: 30, opacity: 0, ease: "none", scrollTrigger: reveal(".stage", "top 90%", "center 60%") });
+      gsap.utils.toArray(".stage .shape").forEach((s, i) => {
+        gsap.fromTo(s, { scale: 0, rotation: [-120, 90, -60, 140, -90][i] }, { scale: 1, rotation: 0, ease: "back.out(2)", scrollTrigger: reveal(".stage", "top 85%", "center 55%") });
+      });
+      gsap.utils.toArray(".say .w").forEach(w => {
+        gsap.fromTo(w.querySelectorAll(".ci"),
+          { yPercent: gsap.utils.random(-90, 90, true), rotation: gsap.utils.random(-25, 25, true), color: "#5b6390" },
+          { yPercent: 0, rotation: 0, color: "#edf2ff", stagger: 0.05, ease: "back.out(2)", scrollTrigger: reveal(w, "top 88%", "top 62%") });
+      });
+      gsap.utils.toArray(".say .stk").forEach(s => {
+        gsap.from(s, { scale: 0.4, rotation: -18, opacity: 0, ease: "back.out(2)", scrollTrigger: reveal(s, "top 88%", "top 65%") });
+      });
+      gsap.utils.toArray(".say .ish").forEach(s => {
+        gsap.fromTo(s, { scale: 0, rotation: -180 }, { scale: 1, rotation: 0, ease: "back.out(2.5)", scrollTrigger: reveal(s, "top 88%", "top 62%") });
+      });
     });
     if (document.fonts) document.fonts.ready.then(() => ScrollTrigger.refresh());
 
