@@ -36,7 +36,7 @@
   --f-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
   --f-mono: "DM Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
 
-  --bar-h: 44px;
+  --bar-h: 44px; --nav-h: 72px; --peek: 140px;
   --gutter-l: max(16px, env(safe-area-inset-left, 0px));
   --gutter-r: max(16px, env(safe-area-inset-right, 0px));
   --maxw: 1360px;
@@ -112,7 +112,12 @@ a { color: inherit; }
 .shape svg { display: block; width: 100%; height: 100%; overflow: visible; }
 
 /* ---------- Hero ---------- */
-.hero { position: relative; padding-block: clamp(24px, 6vw, 72px) clamp(40px, 6vw, 72px); }
+.hero {
+  position: relative; padding-block: clamp(24px, 6vw, 72px) clamp(40px, 6vw, 72px);
+  /* Fill the first screen: title and date centered, only a peek of "Qué esperar" below */
+  min-height: calc(100svh - var(--bar-h) - var(--nav-h) - var(--peek));
+  display: flex; flex-direction: column; justify-content: center;
+}
 .hero h1 {
   position: relative; margin: 0; text-align: center;
   font: 900 clamp(50px, 14.5vw, 236px)/.9 var(--f-display);
@@ -160,7 +165,7 @@ h3 { font: 800 clamp(22px, 2.2vw, 28px)/1.1 var(--f-display); letter-spacing: -.
   will-change: transform;
 }
 .hp { flex: none; }
-.hp-intro { width: min(720px, calc(100vw - 32px)); padding-left: max(0px, calc((100vw - var(--maxw)) / 2)); margin-right: clamp(48px, 10vw, 180px); box-sizing: content-box; }
+.hp-intro { align-self: flex-start; width: min(720px, calc(100vw - 32px)); padding-left: max(0px, calc((100vw - var(--maxw)) / 2)); margin-right: clamp(48px, 10vw, 180px); box-sizing: content-box; }
 .hp-stage { width: min(760px, 90vw, 74svh); }
 @media (max-width: 760px) {
   .hstrip { overflow: visible; }
@@ -711,11 +716,12 @@ if (window.gsap) {
       const track = strip.querySelector(".hstrip-track");
       const barH = () => document.querySelector(".locbar").offsetHeight;
       const dist = () => Math.max(0, track.scrollWidth - innerWidth);
-      /* The intro tags pop when the strip locks in place, close to the middle of the screen */
-      const tagsIn = gsap.from(".hp-intro .tag", { rotation: 0, scale: 0.6, opacity: 0, stagger: 0.12, duration: 0.7, ease: "back.out(2.4)", paused: true });
+      /* The intro tags peek from the bottom of the first screen, so they pop as soon as they show */
+      gsap.from(".hp-intro .tag", { rotation: 0, scale: 0.6, opacity: 0, stagger: 0.12, duration: 0.7, ease: "back.out(2.4)", delay: 0.4,
+        scrollTrigger: { trigger: ".hp-intro .tags", start: "top bottom", toggleActions: "play none none none" } });
       const slide = gsap.to(track, {
         x: () => -dist(), ease: "none",
-        scrollTrigger: { trigger: strip, start: () => strip.offsetHeight > innerHeight - barH() ? "top " + barH() : "clamp(bottom bottom)", end: () => "+=" + dist(), pin: true, scrub: 1, invalidateOnRefresh: true, onEnter: () => tagsIn.play() }
+        scrollTrigger: { trigger: strip, start: () => strip.offsetHeight > innerHeight - barH() ? "top " + barH() : "clamp(bottom bottom)", end: () => "+=" + dist(), pin: true, scrub: 1, invalidateOnRefresh: true }
       });
       const along = (el, start, end) => ({ trigger: el, containerAnimation: slide, start, end, scrub: true });
 
@@ -741,7 +747,7 @@ if (window.gsap) {
     mm.add("(max-width: 760px)", () => {
       const reveal = (el, start = "top 85%", end = "top 55%") => ({ trigger: el, start, end, scrub: true });
       gsap.from(".hp-intro .tag", { rotation: 0, scale: 0.6, opacity: 0, stagger: 0.12, duration: 0.7, ease: "back.out(2.4)",
-        scrollTrigger: { trigger: ".hp-intro", start: "top 75%", toggleActions: "play none none none" } });
+        delay: 0.4, scrollTrigger: { trigger: ".hp-intro", start: "top bottom", toggleActions: "play none none none" } });
       gsap.from(".stage .orb", { yPercent: 30, opacity: 0, ease: "none", scrollTrigger: reveal(".stage", "top 90%", "center 60%") });
       gsap.utils.toArray(".stage .shape").forEach((s, i) => {
         gsap.fromTo(s, { scale: 0, rotation: [-120, 90, -60, 140, -90][i] }, { scale: 1, rotation: 0, ease: "back.out(2)", scrollTrigger: reveal(".stage", "top 85%", "center 55%") });
