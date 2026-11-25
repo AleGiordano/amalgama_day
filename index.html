@@ -262,6 +262,7 @@ h3 { font: 800 clamp(22px, 2.2vw, 28px)/1.1 var(--f-display); letter-spacing: -.
 /* ---------- Equipos ---------- */
 .teams-head { display: flex; justify-content: space-between; align-items: end; gap: 24px; flex-wrap: wrap; margin-bottom: 44px; }
 .teams-head p { margin: 0; color: var(--muted); max-width: 36ch; }
+.teams-cta { display: flex; justify-content: center; margin-top: clamp(32px, 4vw, 48px); }
 .teams { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 14px; }
 .team {
   position: relative; overflow: hidden;
@@ -501,6 +502,11 @@ h3 { font: 800 clamp(22px, 2.2vw, 28px)/1.1 var(--f-display); letter-spacing: -.
         <h2>Buscá tu equipo</h2>
       </div>
       <div class="teams" id="teams"></div>
+      <div class="teams-cta">
+        <a class="btn solid" href="https://amalgama-day-puntajes.vercel.app/index.html" target="_blank" rel="noopener">Tabla de puntos
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>
+        </a>
+      </div>
     </div>
   </section>
 
